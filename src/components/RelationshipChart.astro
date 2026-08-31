@@ -1,0 +1,480 @@
+---
+/**
+ * CastMemo 風・人物相関図。
+ *
+ * 目的は「Web の図表」ではなく、CastMemo アプリでユーザーが
+ * キャンバス上に人物を自由配置し、線・矢印・関係ラベルで結んだ相関図の再現:
+ *   - かなり縦長の dark navy / deep purple キャンバス（ごく弱い紫系グラデ）
+ *   - 円形の人物ノードは関係線よりはっきり目立つ。中に頭文字、下に名前
+ *   - 人物は上下左右に少し不規則に配置（グリッドにしない・family tree にしない）
+ *   - 関係線は family=green / friend=blue / rival=red / other=light gray
+ *   - 関係ラベルは「線の近くに浮いている小さなタグ」（ほぼ黒の半透明・角丸・種別色の文字）
+ *
+ * 画像は一切使用しない（HTML/CSS/SVG のみ・runtime JS なし）。
+ * SVG は aria-hidden。直後に同じ内容のテキストリストを出し、そちらを
+ * アクセシブルな情報源とする。
+ *
+ * モバイル: 図はコンテナ内部だけ横スクロール可能。ページ全体は横スクロールしない。
+ */
+import type { RelationshipChartData } from '../lib/relationship-chart';
+import { RELATION_STYLES, NODE_GROUP_COLORS } from '../lib/relationship-chart';
+
+interface Props extends RelationshipChartData {
+  /** 図のタイトル（figcaption） */
+  title?: string;
+  /** viewBox 寸法（縦長 9:15 前後を推奨） */
+  width?: number;
+  height?: number;
+}
+
+const {
+  nodes,
+  relationships,
+  title = '人物相関図',
+  width = 600,
+  height = 1120,
+} = Astro.props;
+
+/** 人物円の半径（関係線よりかなり目立つサイズ） */
+const R = 34;
+/** 端のノード名がキャンバス外にはみ出さないための内側マージン */
+const MX = 58;
+const MY = 46;
+
+const nodeById = new Map(nodes.map((n) => [n.id, n]));
+
+const uid =
+  'rc-' +
+  [...title]
+    .reduce((h, c) => (Math.imul(h, 31) + c.charCodeAt(0)) >>> 0, 7)
+    .toString(36);
+const capId = `${uid}-cap`;
+
+const cx = (n: { x: number }) => MX + (n.x / 100) * (width - 2 * MX);
+const cy = (n: { y: number }) => MY + (n.y / 100) * (height - 2 * MY);
+
+/** 長い名前は自然に2行へ（7文字以上でほぼ中央から分割） */
+function nameLines(name: string): string[] {
+  const chars = [...name];
+  if (chars.length < 7) return [name];
+  const cut = Math.ceil(chars.length / 2);
+  return [chars.slice(0, cut).join(''), chars.slice(cut).join('')];
+}
+
+const edges = relationships.map((rel) => {
+  const a = nodeById.get(rel.from);
+  const b = nodeById.get(rel.to);
+  if (!a || !b) throw new Error(`RelationshipChart: unknown node "${rel.from}" or "${rel.to}"`);
+  const ax = cx(a);
+  const ay = cy(a);
+  const bx = cx(b);
+  const by = cy(b);
+  const dx = bx - ax;
+  const dy = by - ay;
+  const len = Math.hypot(dx, dy) || 1;
+  const ux = dx / len;
+  const uy = dy / len;
+  const startPad = R + 4;
+  const endPad = R + 4 + (rel.directed ? 11 : 0);
+  const x1 = ax + ux * startPad;
+  const y1 = ay + uy * startPad;
+  const x2 = bx - ux * endPad;
+  const y2 = by - uy * endPad;
+
+  const t = rel.labelPos ?? 0.5;
+  let d: string;
+  let bmx: number;
+  let bmy: number;
+  if (rel.curve) {
+    const nx = -uy;
+    const ny = ux;
+    const off = rel.curve * len * 0.5;
+    const qx = (x1 + x2) / 2 + nx * off;
+    const qy = (y1 + y2) / 2 + ny * off;
+    d = `M${x1.toFixed(1)} ${y1.toFixed(1)} Q${qx.toFixed(1)} ${qy.toFixed(1)} ${x2.toFixed(1)} ${y2.toFixed(1)}`;
+    const it = 1 - t;
+    bmx = it * it * x1 + 2 * it * t * qx + t * t * x2;
+    bmy = it * it * y1 + 2 * it * t * qy + t * t * y2;
+  } else {
+    d = `M${x1.toFixed(1)} ${y1.toFixed(1)} L${x2.toFixed(1)} ${y2.toFixed(1)}`;
+    bmx = x1 + (x2 - x1) * t;
+    bmy = y1 + (y2 - y1) * t;
+  }
+
+  // ラベルは線の完全な中央には置かず、線に対して垂直方向へ少し浮かせる
+  // （常に「上寄り」の側へ。手動指定 labelOffset があればそれを足す）
+  let px = -uy;
+  let py = ux;
+  if (py > 0) {
+    px = -px;
+    py = -py;
+  }
+  const autoOff = 9;
+  const manualOff = rel.labelOffset ?? 0;
+  const mx = bmx + px * autoOff + px * manualOff;
+  const my = bmy + py * autoOff + py * manualOff;
+
+  return { rel, d, mx, my, style: RELATION_STYLES[rel.type] };
+});
+
+const textRelations = relationships.map((rel) => {
+  const a = nodeById.get(rel.from)!;
+  const b = nodeById.get(rel.to)!;
+  const conj = rel.directed ? '→' : '−';
+  return {
+    type: rel.type,
+    text: rel.note ?? `${a.name} ${conj} ${b.name}（${rel.label}）`,
+  };
+});
+
+const relTypesUsed = [...new Set(relationships.map((r) => r.type))];
+---
+
+<figure class="rchart" aria-labelledby={capId}>
+  <figcaption id={capId} class="rchart__cap">{title}</figcaption>
+
+  <ul class="rchart__legend" aria-hidden="true">
+    {relTypesUsed.map((t) => (
+      <li>
+        <span class="rchart__swatch" data-type={t}></span>
+        {RELATION_STYLES[t].legend}
+      </li>
+    ))}
+  </ul>
+
+  <p class="rchart__swipehint" aria-hidden="true">横にスワイプして人物関係を確認できます</p>
+
+  <div
+    class="rchart__scroll"
+    tabindex="0"
+    role="group"
+    aria-label={`${title}（横スクロールで全体を確認できます。同じ内容をこの下にテキストでも掲載しています）`}
+  >
+    <div class="rchart__canvas">
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        class="rchart__svg"
+        aria-hidden="true"
+        focusable="false"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <defs>
+          <linearGradient id={`${uid}-bg`} x1="0.15" y1="0" x2="0.7" y2="1">
+            <stop offset="0" stop-color="#191a2d" />
+            <stop offset="0.5" stop-color="#1b1930" />
+            <stop offset="1" stop-color="#221a35" />
+          </linearGradient>
+          <radialGradient id={`${uid}-glow`} cx="0.5" cy="0.14" r="0.55">
+            <stop offset="0" stop-color="#6a5cff" stop-opacity="0.10" />
+            <stop offset="1" stop-color="#6a5cff" stop-opacity="0" />
+          </radialGradient>
+          {[...new Set(nodes.map((n) => n.group ?? 'default'))].map((g) => (
+            <radialGradient id={`${uid}-node-${g}`} cx="0.38" cy="0.32" r="0.85">
+              <stop offset="0" stop-color="#a99bff" stop-opacity="0.55" />
+              <stop offset="0.55" stop-color={NODE_GROUP_COLORS[g]} />
+              <stop offset="1" stop-color={NODE_GROUP_COLORS[g]} />
+            </radialGradient>
+          ))}
+          {relTypesUsed.map((t) => (
+            <marker
+              id={`${uid}-arrow-${t}`}
+              viewBox="0 0 12 12"
+              refX="9"
+              refY="6"
+              markerWidth="8.5"
+              markerHeight="8.5"
+              orient="auto-start-reverse"
+            >
+              <path d="M1 1 L11 6 L1 11 Z" fill={RELATION_STYLES[t].color} />
+            </marker>
+          ))}
+        </defs>
+
+        <rect x="0" y="0" width={width} height={height} rx="24" fill={`url(#${uid}-bg)`} />
+        <rect x="0" y="0" width={width} height={height} rx="24" fill={`url(#${uid}-glow)`} />
+
+        {/* 関係線 */}
+        {edges.map((e) => (
+          <path
+            d={e.d}
+            fill="none"
+            stroke={e.style.color}
+            stroke-width={e.style.width}
+            stroke-dasharray={e.style.dash || undefined}
+            stroke-linecap="round"
+            marker-end={e.rel.directed ? `url(#${uid}-arrow-${e.rel.type})` : undefined}
+            opacity="0.9"
+          />
+        ))}
+
+        {/* 関係ラベル（線の近くに浮く小さなタグ） */}
+        {edges.map((e) => {
+          const w = [...e.rel.label].length * 16 + 18;
+          return (
+            <g>
+              <rect
+                x={(e.mx - w / 2).toFixed(1)}
+                y={(e.my - 14).toFixed(1)}
+                width={w}
+                height="28"
+                rx="9"
+                fill="#0b0c15"
+                fill-opacity="0.84"
+                stroke={e.style.color}
+                stroke-opacity="0.35"
+              />
+              <text
+                x={e.mx.toFixed(1)}
+                y={(e.my + 1).toFixed(1)}
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="17"
+                font-weight="700"
+                fill={e.style.text}
+              >
+                {e.rel.label}
+              </text>
+            </g>
+          );
+        })}
+
+        {/* 人物ノード */}
+        {nodes.map((n) => {
+          const x = cx(n);
+          const y = cy(n);
+          const g = n.group ?? 'default';
+          const lines = nameLines(n.name);
+          return (
+            <g>
+              <circle
+                cx={x}
+                cy={y}
+                r={R}
+                fill={`url(#${uid}-node-${g})`}
+                stroke="#d7d1f6"
+                stroke-opacity="0.85"
+                stroke-width="2"
+              />
+              <text
+                x={x}
+                y={y + 1}
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="30"
+                font-weight="700"
+                fill="#f4f2ff"
+              >
+                {n.initial}
+              </text>
+              <text
+                x={x}
+                y={y + R + 22}
+                text-anchor="middle"
+                font-size="22"
+                font-weight="600"
+                fill="#c3bfe6"
+                stroke="#161628"
+                stroke-width="4.5"
+                paint-order="stroke"
+              >
+                {lines.map((line, i) => (
+                  <tspan x={x} dy={i === 0 ? 0 : 24}>{line}</tspan>
+                ))}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  </div>
+
+  <p class="rchart__scrollhint" aria-hidden="true">← 横スクロールで全体を確認できます →</p>
+
+  <details class="rchart__text">
+    <summary class="rchart__text-summary">人物関係をテキストで確認する</summary>
+    <ul class="rchart__list">
+      {textRelations.map((r) => (
+        <li>
+          <span class="rchart__list-tag" data-type={r.type}>{RELATION_STYLES[r.type].legend}</span>
+          <span>{r.text}</span>
+        </li>
+      ))}
+    </ul>
+  </details>
+</figure>
+
+<style>
+  .rchart {
+    margin: 1.75rem 0 2rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+
+  .rchart__cap {
+    margin: 0;
+    padding: 0.8rem 1rem;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--color-text);
+    background: var(--color-surface-muted);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  /* 凡例は補助情報。控えめに（相関図本体より目立たせない） */
+  .rchart__legend {
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.9rem;
+    font-size: 0.7rem;
+    color: var(--color-text-subtle);
+    background: var(--color-surface);
+  }
+
+  .rchart__legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .rchart__swatch {
+    width: 1.25rem;
+    border-top: 3px solid;
+    border-radius: 2px;
+    opacity: 0.85;
+  }
+  .rchart__swatch[data-type='family'] { border-top-color: #1f9d55; }
+  .rchart__swatch[data-type='friend'] { border-top-color: #2f6fe0; }
+  .rchart__swatch[data-type='rival'] {
+    border-top-style: dashed;
+    border-top-color: #d6453f;
+  }
+  .rchart__swatch[data-type='other'] { border-top-color: #6b7180; }
+
+  .rchart__scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding: 0.9rem;
+    background: #131427;
+    border-top: 1px solid var(--color-border);
+    overscroll-behavior-x: contain;
+  }
+
+  .rchart__scroll:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: -3px;
+  }
+
+  .rchart__canvas {
+    min-width: 440px;
+    max-width: 600px;
+    margin-inline: auto;
+  }
+
+  .rchart__svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+  }
+
+  /* モバイルのみ: キャンバス直前の控えめなスワイプ案内 */
+  .rchart__swipehint {
+    margin: 0;
+    padding: 0.45rem 1rem 0.15rem;
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--color-text-subtle);
+    background: var(--color-surface);
+  }
+
+  .rchart__scrollhint {
+    margin: 0;
+    padding: 0.5rem 1rem 0.65rem;
+    text-align: center;
+    font-size: 0.74rem;
+    color: #a7a9c2;
+    background: #131427;
+  }
+
+  @media (min-width: 34rem) {
+    .rchart__swipehint { display: none; }
+    .rchart__scrollhint { display: none; }
+  }
+
+  .rchart__text {
+    padding: 0.4rem 1rem 0.9rem;
+  }
+
+  .rchart__text-summary {
+    cursor: pointer;
+    padding: 0.6rem 0.2rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-accent-strong);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .rchart__text-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .rchart__text-summary::before {
+    content: '';
+    width: 0.5rem;
+    height: 0.5rem;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(-45deg);
+    transition: transform 0.15s ease;
+  }
+
+  .rchart__text[open] .rchart__text-summary::before {
+    transform: rotate(45deg);
+  }
+
+  .rchart__text-summary:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  .rchart__list {
+    list-style: none;
+    margin: 0.7rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .rchart__list li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--color-text);
+  }
+
+  .rchart__list-tag {
+    flex: none;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-border-strong);
+    color: var(--color-text-muted);
+  }
+  .rchart__list-tag[data-type='family'] { background: #e6f7ee; color: #1c7a45; border-color: #bce6cf; }
+  .rchart__list-tag[data-type='friend'] { background: #e8f0fe; color: #2a5cc0; border-color: #c3d6f7; }
+  .rchart__list-tag[data-type='rival'] { background: #fdecec; color: #b83a35; border-color: #f2c9c7; }
+  .rchart__list-tag[data-type='other'] { background: var(--color-surface-muted); color: var(--color-text-muted); }
+</style>

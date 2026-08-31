@@ -14,8 +14,13 @@ import { glob } from 'astro/loaders';
 const works = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/works' }),
   schema: z.object({
-    /** ページ H1 / 一覧の見出しに使うタイトル */
+    /** ページ H1 / 一覧カード / パンくずに使うタイトル */
     title: z.string(),
+    /**
+     * <title> タグ・OGP タイトルに使う文字列（SEO 用の長め表記）。
+     * 省略時は `title` に " | CastMemo" を付けたものを使う。
+     */
+    seoTitle: z.string().optional(),
     /**
      * URL に使うスラッグ（/works/[slug]/）。
      * 省略時はファイル名がそのまま ID として使われる。
@@ -49,6 +54,11 @@ const works = defineCollection({
     sample: z.boolean().default(false),
     /** OGP 画像を個別指定したい場合のパス（サイト内 or 絶対 URL） */
     ogImage: z.string().optional(),
+    /**
+     * true の場合、記事テンプレート末尾の定型 CastMemo CTA バナーを出さない。
+     * 記事本文側で独自の CTA を配置したいときに使う。
+     */
+    hideDefaultCta: z.boolean().default(false),
   }),
 });
 

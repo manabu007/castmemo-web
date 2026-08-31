@@ -46,6 +46,7 @@ const dateFmt = new Intl.DateTimeFormat('ja-JP', { dateStyle: 'long' });
 
 <BaseLayout
   title={data.title}
+  exactTitle={data.seoTitle}
   description={data.description}
   ogType="article"
   image={data.ogImage}
@@ -100,7 +101,7 @@ const dateFmt = new Intl.DateTimeFormat('ja-JP', { dateStyle: 'long' });
       </div>
 
       <div class="work-footer">
-        <AppCtaBanner location="work-cta" workSlug={slug} />
+        {!data.hideDefaultCta && <AppCtaBanner location="work-cta" workSlug={slug} />}
         <p class="work-footer__back">
           <a href="/works/" class="btn btn--ghost">&larr; 作品ガイド一覧へ戻る</a>
         </p>

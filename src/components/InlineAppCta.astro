@@ -1,0 +1,62 @@
+---
+/**
+ * 本文中に置く小さめの CastMemo 誘導カード。
+ * AppCtaBanner より軽く、見出し(h2/h3)を挿入しないので記事の途中に置ける。
+ * ボタンは既存 AppStoreButton を再利用。
+ */
+import AppStoreButton from './AppStoreButton.astro';
+
+interface Props {
+  /** カードの見出し（h ではなく強調テキストとして描画） */
+  title: string;
+  /** 計測用の位置識別子 */
+  location: string;
+  /** 作品スラッグ */
+  workSlug?: string;
+  /** ボタン文言 */
+  buttonLabel?: string;
+}
+
+const { title, location, workSlug, buttonLabel = 'App StoreでCastMemoを見る' } = Astro.props;
+---
+
+<aside class="inline-cta" aria-label="CastMemo アプリの案内">
+  <p class="inline-cta__title">{title}</p>
+  <div class="inline-cta__body"><slot /></div>
+  <AppStoreButton location={location} workSlug={workSlug} label={buttonLabel} variant="primary" />
+</aside>
+
+<style>
+  .inline-cta {
+    margin: 1.75rem 0;
+    padding: 1.15rem 1.2rem;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    background:
+      radial-gradient(120% 120% at 100% 0%, var(--gradient-brand-soft), transparent 60%),
+      var(--color-surface);
+    display: grid;
+    gap: 0.55rem;
+    justify-items: start;
+  }
+
+  .inline-cta__title {
+    margin: 0;
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--color-text);
+  }
+
+  .inline-cta__body {
+    margin: 0 0 0.3rem;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+  }
+
+  .inline-cta__body :global(p) {
+    margin: 0 0 0.5rem;
+  }
+  .inline-cta__body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+</style>

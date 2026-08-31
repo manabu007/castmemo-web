@@ -1,0 +1,139 @@
+---
+/**
+ * 作品ガイドの登場人物カード。
+ *
+ * <PersonCard name="ハリー・ダ・スーザ" actor="トム・ハーディ" memo="ハリガン家の「問題解決役」">
+ *   本文（この人物の説明）...
+ * </PersonCard>
+ *
+ * memo … 「覚え方」として強調表示（主要人物向け）
+ * relation … 「関係」として強調表示（家族欄など）
+ * どちらも任意。両方省略すると本文のみのコンパクト表示。
+ * 画像は使用しない（頭文字を表示）。
+ */
+interface Props {
+  name: string;
+  /** 「演：」に続く俳優名（任意） */
+  actor?: string;
+  /** 「覚え方」テキスト（任意） */
+  memo?: string;
+  /** 「関係」テキスト（任意・改行は \n で複数行可） */
+  relation?: string;
+}
+
+const { name, actor, memo, relation } = Astro.props;
+const initial = [...name][0] ?? '';
+const relationLines = relation ? relation.split('\n').filter(Boolean) : [];
+---
+
+<article class="pcard">
+  <div class="pcard__head">
+    <span class="pcard__initial" aria-hidden="true">{initial}</span>
+    <div>
+      <h3 class="pcard__name">{name}</h3>
+      {actor && <p class="pcard__actor">演：{actor}</p>}
+    </div>
+  </div>
+
+  <div class="pcard__body">
+    <slot />
+  </div>
+
+  {memo && (
+    <p class="pcard__foot">
+      <span class="pcard__foot-label">覚え方</span>
+      {memo}
+    </p>
+  )}
+
+  {relationLines.length > 0 && (
+    <div class="pcard__foot pcard__foot--relation">
+      <span class="pcard__foot-label">関係</span>
+      <span>
+        {relationLines.map((line, i) => (
+          <>
+            {i > 0 && <br />}
+            {line}
+          </>
+        ))}
+      </span>
+    </div>
+  )}
+</article>
+
+<style>
+  .pcard {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    padding: 1.1rem 1.15rem;
+    margin: 1rem 0;
+    box-shadow: var(--shadow-card);
+  }
+
+  .pcard__head {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .pcard__initial {
+    flex: none;
+    width: 2.6rem;
+    height: 2.6rem;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #fff;
+    background: linear-gradient(135deg, #6d5bd0, #4f7cff);
+  }
+
+  .pcard__name {
+    margin: 0;
+    font-size: 1.08rem;
+  }
+
+  .pcard__actor {
+    margin: 0.1rem 0 0;
+    font-size: 0.82rem;
+    color: var(--color-text-subtle);
+  }
+
+  .pcard__body {
+    color: var(--color-text-muted);
+    font-size: 0.94rem;
+  }
+
+  .pcard__body :global(p) {
+    margin: 0 0 0.6rem;
+  }
+  .pcard__body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .pcard__foot {
+    margin: 0.8rem 0 0;
+    padding-top: 0.7rem;
+    border-top: 1px dashed var(--color-border-strong);
+    font-size: 0.9rem;
+    color: var(--color-text);
+    display: flex;
+    gap: 0.55rem;
+    align-items: baseline;
+  }
+
+  .pcard__foot-label {
+    flex: none;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--color-accent-strong);
+    background: var(--color-accent-soft);
+    padding: 0.12rem 0.5rem;
+    border-radius: 999px;
+    transform: translateY(-1px);
+  }
+</style>

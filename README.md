@@ -99,7 +99,8 @@ npm run generate:assets  # public/*.svg から OGP画像・PNGファビコンを
 
    ```yaml
    ---
-   title: "作品タイトル"
+   title: "作品タイトル（H1・一覧カード・パンくずに使う）"
+   seoTitle: "SEO 用の長め <title>（任意。省略時は title + ' | CastMemo'）"
    slug: "work-slug"          # 省略時はファイル名。URL は /works/<slug>/
    description: "meta description / 一覧カードに使う説明"
    category: "novel"          # novel | drama | movie | manga | anime | other
@@ -110,11 +111,20 @@ npm run generate:assets  # public/*.svg から OGP画像・PNGファビコンを
    draft: false               # true の間は本番ビルド・sitemap に出ない
    featured: false            # true でトップページ優先表示
    sample: false              # true で「サンプル」バッジ・注意書きを表示
+   hideDefaultCta: false      # true で記事末尾の定型 CTA バナーを出さない（本文で独自 CTA を置くとき）
    ogImage: "/path.png"       # 任意。個別 OGP 画像
    ---
    ```
 
-3. 本文に主要人物・人物関係・簡易相関図・CTA などを Markdown / MDX で書く。
+3. 本文に主要人物・人物関係・相関図・CTA などを Markdown / MDX で書く。
+   MDX なら次のコンポーネントを `import` して使える（`src/components/`）:
+   - `RelationshipChart` … CastMemo 風の人物相関図（HTML/CSS/SVG のみ・画像なし）。
+     nodes / relationships のデータは `src/data/works/<slug>.ts` に置き、型は `src/lib/relationship-chart.ts`。
+   - `PersonCard` … 登場人物カード（name / actor / memo「覚え方」/ relation「関係」）。
+   - `ArticleNotice` … 本文中の注意書きコールアウト（`tone="spoiler"` 等）。
+   - `InlineAppCta` … 本文中の小さめ App 誘導カード。
+   - `AppStoreButton` / `AppCtaBanner` … 既存の CTA（`location` に計測用の識別子を渡す）。
+   実装例は `src/content/works/mobland.mdx`。
 4. `title` / `description` / `canonical` / OGP / `Article` JSON-LD は frontmatter から自動生成されます。
 5. ページは `/works/<slug>/` に生成されます。
 
@@ -248,15 +258,22 @@ castmemo-web/
    │  ├─ Header.astro         # ダーク・<details> モバイルメニュー
    │  ├─ Footer.astro         # ダーク
    │  ├─ AppStoreButton.astro # 紫→青グラデCTA・data-analytics-*
-   │  ├─ AppCtaBanner.astro   # ダークCTA バナー
+   │  ├─ AppCtaBanner.astro / InlineAppCta.astro  # 本文用 CTA（大 / 小）
    │  ├─ AppIcon.astro        # アプリアイコン（軽量版→生→SVGプレースホルダーの順）
    │  ├─ AppScreenshot.astro  # スマホフレーム内デモ（実画像→CSS製デモUI・架空作品）
+   │  ├─ RelationshipChart.astro  # CastMemo 風の人物相関図（HTML/CSS/SVG のみ）
+   │  ├─ PersonCard.astro     # 登場人物カード
+   │  ├─ ArticleNotice.astro  # 本文中の注意書きコールアウト
    │  └─ WorkCard.astro
    ├─ lib/
    │  ├─ works.ts             # 作品クエリ（draft 除外・並び替え）
    │  ├─ labels.ts            # カテゴリ・ネタバレ方針の日本語ラベル
+   │  ├─ relationship-chart.ts # 相関図の型・関係色/ノード色の定義
    │  └─ assets.ts            # public/ のファイル存在チェック
+   ├─ data/works/
+   │  └─ mobland.ts           # モブランド相関図データ（nodes / relationships）
    ├─ content/works/
+   │  ├─ mobland.mdx          # 本番記事（モブランド）
    │  ├─ sample-work.md       # サンプル（削除可）
    │  └─ draft-example.md     # draft 動作確認（削除可）
    └─ pages/

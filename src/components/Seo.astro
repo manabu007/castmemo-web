@@ -13,6 +13,11 @@ import {
 
 interface Props {
   title?: string;
+  /**
+   * <title> / og:title に使う完全な文字列。指定時は " | CastMemo" の
+   * 自動付与を行わずそのまま使う（`title` より優先）。
+   */
+  exactTitle?: string;
   description?: string;
   /** OGP タイプ（トップ・一覧は website、記事は article） */
   ogType?: 'website' | 'article';
@@ -24,6 +29,7 @@ interface Props {
 
 const {
   title,
+  exactTitle,
   description = SITE_DESCRIPTION,
   ogType = 'website',
   image,
@@ -35,8 +41,10 @@ const resolvedImage = image ?? DEFAULT_OG_IMAGE;
 // 既定の OG 画像は 1200x630 と分かっているので寸法メタを出せる
 const isDefaultImage = !image && Boolean(DEFAULT_OG_IMAGE);
 
-// タイトルはページ固有 + サイト名。トップページはサイト名のみ。
-const pageTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} - 登場人物を整理して、もっと作品を楽しむ。`;
+// タイトル: exactTitle があればそのまま / title があれば "… | CastMemo" / なければ既定。
+const pageTitle =
+  exactTitle ??
+  (title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} - 登場人物を整理して、もっと作品を楽しむ。`);
 
 // canonical / OGP URL は site を基準に現在ページの pathname から生成
 const canonical = new URL(Astro.url.pathname, SITE_URL).href;

@@ -1,0 +1,70 @@
+---
+/**
+ * 記事本文中の注意書きコールアウト（作品ガイドで再利用）。
+ *
+ * <ArticleNotice tone="spoiler">ネタバレは控えめにしています…</ArticleNotice>
+ */
+interface Props {
+  /** 見た目のトーン */
+  tone?: 'spoiler' | 'info';
+  /** 見出しラベル（省略時は tone に応じた既定値） */
+  label?: string;
+}
+
+const { tone = 'info', label } = Astro.props;
+const defaultLabel = tone === 'spoiler' ? 'ネタバレ控えめ' : 'メモ';
+---
+
+<aside class:list={['anotice', `anotice--${tone}`]}>
+  <span class="anotice__label">
+    <span class="anotice__dot" aria-hidden="true"></span>
+    {label ?? defaultLabel}
+  </span>
+  <div class="anotice__body"><slot /></div>
+</aside>
+
+<style>
+  .anotice {
+    margin: 1.5rem 0;
+    padding: 0.9rem 1.05rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-muted);
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .anotice--spoiler {
+    border-color: #cbb8ec;
+    background: linear-gradient(0deg, var(--color-accent-soft), var(--color-surface-muted));
+  }
+
+  .anotice__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: var(--color-accent-strong);
+  }
+
+  .anotice__dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--gradient-brand);
+  }
+
+  .anotice__body {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+  }
+
+  .anotice__body :global(p) {
+    margin: 0;
+  }
+  .anotice__body :global(p + p) {
+    margin-top: 0.5rem;
+  }
+</style>
