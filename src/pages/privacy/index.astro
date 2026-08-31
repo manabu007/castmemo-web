@@ -1,0 +1,77 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+/*
+ * ⚠️ 重要 / TODO（法務確認が必要）
+ * このプライバシーポリシーは第1段階の暫定プレースホルダーです。
+ * 公開前・および Analytics 等の導入時に、必ず正式な内容を確認・作成してください。
+ * - サイト訪問時に取得する情報（アクセスログ / Cookie / Analytics）の実態に合わせた記述
+ * - アプリ側プライバシーポリシーとの整合性
+ * - 問い合わせ窓口・事業者情報の記載
+ * - 必要に応じて弁護士等の確認
+ */
+
+const title = 'プライバシーポリシー';
+const description = 'CastMemo 公式サイトのプライバシーポリシー（暫定版）。';
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="section">
+    <div class="container prose">
+      <p class="eyebrow">プライバシーポリシー</p>
+      <h1>プライバシーポリシー</h1>
+
+      <p class="notice">
+        本ページは暫定版です。内容は今後更新される場合があります。
+      </p>
+
+      <h2>本サイトについて</h2>
+      <p>
+        本サイトは、iOS アプリ「CastMemo」の公式 Web サイトです。運営者はアプリの開発者です。
+      </p>
+
+      <h2>取得する情報について</h2>
+      <p>
+        現時点では、本サイト上で利用者のアカウント登録や、氏名・メールアドレス等の個人情報の入力を求めることはありません。
+      </p>
+      <p>
+        本サイトは静的な Web サイトとして公開されており、一般的な Web サーバーのアクセスログが記録される場合があります。
+      </p>
+
+      <h2>アクセス解析について</h2>
+      <p>
+        現時点では、本サイトにアクセス解析ツール（Google Analytics 等）は導入していません。
+        将来的にアクセス解析や広告に関する仕組みを導入する場合は、本ポリシーを更新し、
+        利用するツールや取得する情報の範囲について記載します。
+      </p>
+
+      <h2>アプリのプライバシーについて</h2>
+      <p>
+        アプリ「CastMemo」自体の個人情報の取り扱いについては、App Store の掲載情報およびアプリ内のプライバシーポリシーをご確認ください。
+      </p>
+
+      <h2>お問い合わせ</h2>
+      <p>
+        本ポリシーに関するお問い合わせ窓口は準備中です。<a href="/contact/">お問い合わせページ</a>をご確認ください。
+      </p>
+
+      <h2>制定日</h2>
+      <p>本ポリシーは今後、正式な内容に更新される予定です。</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .notice {
+    background: var(--color-surface-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+  }
+
+  h2 {
+    margin-top: 2.25rem;
+  }
+</style>

@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!--
+    CastMemo デフォルト OGP 画像（1200x630）。CastMemo ブランドのみで構成。
+    外部素材は不使用。編集後は `node scripts/generate-og.mjs` で og-default.png を再生成。
+  -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#181a30" />
+      <stop offset="1" stop-color="#14152400" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7c5cff" />
+      <stop offset="1" stop-color="#4f7cff" />
+    </linearGradient>
+    <radialGradient id="glow" cx="0.78" cy="0.3" r="0.5">
+      <stop offset="0" stop-color="#4f7cff" stop-opacity="0.35" />
+      <stop offset="1" stop-color="#4f7cff" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="#16172a" />
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect width="1200" height="630" fill="url(#glow)" />
+
+  <!-- 上部アクセントライン -->
+  <rect x="0" y="0" width="1200" height="8" fill="url(#accent)" />
+
+  <!-- ロゴマーク（左上） -->
+  <g transform="translate(90 66)">
+    <rect width="60" height="60" rx="15" fill="#282a44" stroke="url(#accent)" stroke-width="3" />
+    <path d="M18 20 30 44M42 18 30 44M18 20 42 18" stroke="url(#accent)" stroke-width="4" stroke-linecap="round" fill="none" />
+    <circle cx="18" cy="20" r="6" fill="#f7f7fb" />
+    <circle cx="42" cy="18" r="6" fill="#f7f7fb" />
+    <circle cx="30" cy="44" r="6" fill="#f7f7fb" />
+  </g>
+  <text x="168" y="107" fill="#f7f7fb" font-size="34" font-weight="800" letter-spacing="2"
+    font-family="Hiragino Sans, Hiragino Kaku Gothic ProN, Noto Sans JP, sans-serif">CastMemo</text>
+
+  <!-- テキスト -->
+  <g font-family="Hiragino Sans, Hiragino Kaku Gothic ProN, Noto Sans JP, sans-serif">
+    <text x="90" y="210" fill="#c3b4ff" font-size="27" font-weight="700" letter-spacing="6">公式サイト</text>
+    <text x="86" y="308" fill="#f7f7fb" font-size="74" font-weight="800">登場人物を整理して、</text>
+    <text x="86" y="402" fill="#f7f7fb" font-size="74" font-weight="800">もっと作品を楽しむ。</text>
+    <text x="90" y="480" fill="#c6c7db" font-size="28" font-weight="500">小説・ドラマ・映画・漫画の「この人、誰だっけ？」を</text>
+    <text x="90" y="522" fill="#c6c7db" font-size="28" font-weight="500">自分だけの人物メモと相関図で整理できるアプリ。</text>
+  </g>
+
+  <!-- 人物3ノード + 関係線モチーフ（右下） -->
+  <g transform="translate(1010 400)">
+    <path d="M-80 -50 L20 70 M100 -25 L20 70 M-80 -50 L100 -25" stroke="url(#accent)" stroke-width="8" stroke-linecap="round" fill="none" />
+    <circle cx="-80" cy="-50" r="24" fill="#f7f7fb" />
+    <circle cx="100" cy="-25" r="24" fill="#f7f7fb" />
+    <circle cx="20" cy="70" r="24" fill="#f7f7fb" />
+  </g>
+</svg>

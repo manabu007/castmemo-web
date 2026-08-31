@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+/*
+ * お問い合わせページ（プレースホルダー）。
+ * 現時点では問い合わせフォームや連絡先メールアドレスは掲載しない。
+ * 窓口（フォーム / サポートメール / App Store 経由 など）が決まったらここを更新する。
+ */
+
+const title = 'お問い合わせ';
+const description = 'CastMemo に関するお問い合わせ窓口のご案内。';
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="section">
+    <div class="container prose">
+      <p class="eyebrow">お問い合わせ</p>
+      <h1>お問い合わせ</h1>
+      <div class="card placeholder">
+        <p><strong>お問い合わせ先を準備中です。</strong></p>
+        <p>
+          窓口の準備が整い次第、このページでご案内します。
+          アプリの不具合報告やご要望は、当面 App Store のレビュー等でお寄せください。
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .placeholder {
+    margin-top: 1.5rem;
+  }
+  .placeholder p:last-child {
+    margin-bottom: 0;
+  }
+</style>

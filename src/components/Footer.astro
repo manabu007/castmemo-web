@@ -1,0 +1,115 @@
+---
+import { SITE_NAME, SITE_TAGLINE, FOOTER_LINKS, APP_STORE_URL } from '../consts';
+import AppIcon from './AppIcon.astro';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer brand">
+  <div class="container site-footer__inner">
+    <div class="site-footer__brand">
+      <div class="site-footer__id">
+        <AppIcon size={44} alt="" class="site-footer__icon" />
+        <p class="site-footer__name">{SITE_NAME}</p>
+      </div>
+      <p class="site-footer__tagline">{SITE_TAGLINE}</p>
+    </div>
+
+    <nav class="site-footer__nav" aria-label="フッターナビゲーション">
+      <ul>
+        <li><a href="/">トップ</a></li>
+        {FOOTER_LINKS.map((link) => (
+          <li><a href={link.href}>{link.label}</a></li>
+        ))}
+        <li>
+          <a href={APP_STORE_URL} target="_blank" rel="noopener external">
+            App Store<span class="visually-hidden">（外部サイト）</span>
+          </a>
+        </li>
+        {/* 将来 English 版を追加したらここにリンクを足す（今回は言語切替UIなし） */}
+        {/* <li><a href="/en/">English</a></li> */}
+      </ul>
+    </nav>
+  </div>
+
+  <div class="container">
+    <p class="site-footer__copyright">
+      &copy; {year} {SITE_NAME}
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--space-section);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-block: 3rem 1.75rem;
+  }
+
+  .site-footer__inner {
+    display: grid;
+    gap: 1.75rem;
+  }
+
+  .site-footer__id {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .site-footer__icon {
+    width: 2.4rem;
+    flex: none;
+  }
+
+  .site-footer__name {
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    font-size: 1.05rem;
+    margin: 0;
+  }
+
+  .site-footer__tagline {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    margin: 0.6rem 0 0;
+  }
+
+  .site-footer__nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+  }
+
+  .site-footer__nav a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+
+  .site-footer__nav a:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+
+  .site-footer__copyright {
+    margin: 1.75rem 0 0;
+    font-size: 0.8rem;
+    color: var(--color-text-subtle);
+  }
+
+  @media (min-width: 48rem) {
+    .site-footer__inner {
+      grid-template-columns: 1fr auto;
+      align-items: start;
+    }
+
+    .site-footer__nav ul {
+      justify-content: flex-end;
+      max-width: 32rem;
+    }
+  }
+</style>

@@ -1,0 +1,15 @@
+---
+/**
+ * Google 向け JSON-LD 構造化データ。
+ * 渡された data をそのまま出力する。存在しない評価・価格・レビュー件数などは
+ * 呼び出し側で絶対に含めないこと。
+ */
+interface Props {
+  data: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const { data } = Astro.props;
+const json = JSON.stringify(data);
+---
+
+<script type="application/ld+json" is:inline set:html={json} />

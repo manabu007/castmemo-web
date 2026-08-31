@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = '特集記事';
+const description =
+  '複数の作品にまたがる登場人物の楽しみ方や、群像劇の読み方などをまとめる特集記事の一覧です（準備中）。';
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="section">
+    <div class="container prose">
+      <p class="eyebrow">特集記事</p>
+      <h1>特集記事</h1>
+      <p class="lede">
+        「群像劇の楽しみ方」「長編を再開するときの人物の思い出し方」など、
+        作品をまたいだテーマの記事を掲載予定です。
+      </p>
+      <div class="card placeholder">
+        <p>特集記事は現在準備中です。公開までしばらくお待ちください。</p>
+        <p><a href="/works/">作品ガイド一覧を見る</a></p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .placeholder {
+    margin-top: 1.5rem;
+  }
+  .placeholder p:last-child {
+    margin-bottom: 0;
+  }
+</style>

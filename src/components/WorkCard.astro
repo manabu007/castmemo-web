@@ -1,0 +1,91 @@
+---
+import type { WorkEntry } from '../lib/works';
+import { workPath } from '../lib/works';
+import { CATEGORY_LABELS, SPOILER_LABELS } from '../lib/labels';
+
+interface Props {
+  work: WorkEntry;
+}
+
+const { work } = Astro.props;
+const { data } = work;
+---
+
+<article class:list={['work-card card', { 'work-card--sample': data.sample }]}>
+  <div class="work-card__meta">
+    {data.sample && <span class="tag work-card__sample">サンプル</span>}
+    <span class="tag">{CATEGORY_LABELS[data.category]}</span>
+    {data.releaseYear && <span class="tag tag--neutral">{data.releaseYear}年</span>}
+    <span class="tag tag--neutral">ネタバレ: {SPOILER_LABELS[data.spoilerPolicy]}</span>
+  </div>
+  <h3 class="work-card__title">
+    <a href={workPath(work)}>{data.title}</a>
+  </h3>
+  <p class="work-card__desc">{data.description}</p>
+  <span class="work-card__go" aria-hidden="true">人物ガイドを読む &rarr;</span>
+</article>
+
+<style>
+  .work-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.12s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  }
+
+  .work-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--color-border-strong);
+    box-shadow: 0 4px 10px rgba(28, 28, 43, 0.06), 0 16px 36px rgba(90, 63, 240, 0.12);
+  }
+
+  .work-card--sample {
+    border-style: dashed;
+  }
+
+  .work-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .work-card__sample {
+    background: #fff3e0;
+    color: #8a5313;
+  }
+
+  .work-card__title {
+    margin: 0 0 0.4rem;
+    font-size: 1.12rem;
+  }
+
+  .work-card__title a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .work-card__title a:hover {
+    color: var(--color-accent-strong);
+  }
+
+  /* カード全体をクリック可能にする（リンクはタイトルのみ・アクセシビリティ優先） */
+  .work-card__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .work-card__desc {
+    margin: 0 0 0.9rem;
+    color: var(--color-text-muted);
+    font-size: 0.92rem;
+  }
+
+  .work-card__go {
+    margin-top: auto;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-accent-strong);
+  }
+</style>

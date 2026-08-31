@@ -1,0 +1,210 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import JsonLd from '../../components/JsonLd.astro';
+import AppCtaBanner from '../../components/AppCtaBanner.astro';
+import { getPublishedWorks, workSlug } from '../../lib/works';
+import { CATEGORY_LABELS, SPOILER_LABELS, SPOILER_DESCRIPTIONS } from '../../lib/labels';
+import { SITE_URL } from '../../consts';
+
+export const getStaticPaths = (async () => {
+  const works = await getPublishedWorks();
+  return works.map((work) => ({
+    params: { slug: workSlug(work) },
+    props: { work },
+  }));
+}) satisfies GetStaticPaths;
+
+const { work } = Astro.props;
+const { data } = work;
+const { Content } = await render(work);
+
+const slug = workSlug(work);
+const canonical = new URL(`/works/${slug}/`, SITE_URL).href;
+const publishedISO = data.publishedAt.toISOString();
+const updatedISO = (data.updatedAt ?? data.publishedAt).toISOString();
+
+// 作品記事の構造化データ。Article を使用。評価・価格・レビュー件数は含めない。
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: data.title,
+  description: data.description,
+  inLanguage: 'ja',
+  datePublished: publishedISO,
+  dateModified: updatedISO,
+  mainEntityOfPage: canonical,
+  about: {
+    '@type': 'CreativeWork',
+    name: data.title,
+  },
+};
+
+const dateFmt = new Intl.DateTimeFormat('ja-JP', { dateStyle: 'long' });
+---
+
+<BaseLayout
+  title={data.title}
+  description={data.description}
+  ogType="article"
+  image={data.ogImage}
+  noindex={data.draft}
+>
+  <JsonLd slot="head" data={jsonLd} />
+
+  <article>
+    <!-- 記事ヘッダー（コンパクトなブランド帯） -->
+    <header class="work-hero brand">
+      <div class="container work-hero__inner">
+        <nav class="breadcrumb" aria-label="パンくずリスト">
+          <a href="/works/">作品ガイド</a>
+          <span aria-hidden="true">/</span>
+          <span>{data.title}</span>
+        </nav>
+
+        <div class="work-hero__meta">
+          {data.sample && <span class="tag work-hero__sample">サンプル記事</span>}
+          <span class="tag">{CATEGORY_LABELS[data.category]}</span>
+          {data.releaseYear && <span class="tag tag--neutral">{data.releaseYear}年</span>}
+          <span class="tag tag--neutral">ネタバレ方針: {SPOILER_LABELS[data.spoilerPolicy]}</span>
+        </div>
+
+        <h1>{data.title}</h1>
+        <p class="work-hero__desc">{data.description}</p>
+        <p class="work-hero__dates">
+          公開: {dateFmt.format(data.publishedAt)}
+          {data.updatedAt && <> ・ 更新: {dateFmt.format(data.updatedAt)}</>}
+        </p>
+      </div>
+    </header>
+
+    <div class="container work-body-wrap">
+      {data.draft && (
+        <p class="notice notice--warn" role="status">
+          これは下書き（draft）です。本番ビルドでは公開されません。
+        </p>
+      )}
+      {data.sample && (
+        <p class="notice notice--sample" role="note">
+          これは動作確認用のサンプル記事です。実在の作品・人物とは関係ありません。
+        </p>
+      )}
+
+      <p class="spoiler-note">
+        <strong>ネタバレ方針</strong>：{SPOILER_DESCRIPTIONS[data.spoilerPolicy]}
+      </p>
+
+      <div class="article-body">
+        <Content />
+      </div>
+
+      <div class="work-footer">
+        <AppCtaBanner location="work-cta" workSlug={slug} />
+        <p class="work-footer__back">
+          <a href="/works/" class="btn btn--ghost">&larr; 作品ガイド一覧へ戻る</a>
+        </p>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .work-hero {
+    padding-block: clamp(1.75rem, 5vw, 2.75rem);
+    background:
+      radial-gradient(90% 130% at 92% 0%, rgba(79, 124, 255, 0.18), transparent 55%),
+      var(--navy-900);
+  }
+
+  .work-hero__inner {
+    max-width: var(--content-width);
+  }
+
+  .breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    color: var(--color-text-subtle);
+    margin-bottom: 1rem;
+  }
+
+  .breadcrumb a {
+    text-decoration: none;
+  }
+
+  .work-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .work-hero__sample {
+    background: #fff3e0;
+    color: #8a5313;
+  }
+
+  .work-hero h1 {
+    margin-bottom: 0.6rem;
+  }
+
+  .work-hero__desc {
+    color: var(--color-text-muted);
+    font-size: 1.02rem;
+    margin: 0 0 0.75rem;
+  }
+
+  .work-hero__dates {
+    font-size: 0.8rem;
+    color: var(--color-text-subtle);
+    margin: 0;
+  }
+
+  /* 本文エリアは読みやすさ優先でライト・本文幅を絞る */
+  .work-body-wrap {
+    max-width: var(--content-width);
+    padding-top: clamp(1.75rem, 5vw, 2.75rem);
+    padding-bottom: 1rem;
+  }
+
+  .notice {
+    padding: 0.7rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.86rem;
+    margin: 0 0 1rem;
+  }
+
+  .notice--warn {
+    background: #fff4e5;
+    border: 1px solid #f0d5a8;
+    color: #7a521a;
+  }
+
+  .notice--sample {
+    background: #fff3e0;
+    border: 1px solid #f1d09c;
+    color: #8a5313;
+  }
+
+  .spoiler-note {
+    background: var(--color-surface-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 0.8rem 1rem;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin: 0 0 2rem;
+  }
+
+  .work-footer {
+    margin-top: 3rem;
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .work-footer__back {
+    margin: 0;
+  }
+</style>

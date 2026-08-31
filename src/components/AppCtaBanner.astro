@@ -1,0 +1,77 @@
+---
+/**
+ * CastMemo アプリへの誘導バナー（作品ページ末尾・各所で再利用）。
+ * CTA なのでブランド（ダークネイビー + グラデーション）で表示する。
+ */
+import AppStoreButton from './AppStoreButton.astro';
+import AppIcon from './AppIcon.astro';
+
+interface Props {
+  /** 計測用の位置識別子 */
+  location: string;
+  /** 作品ページから呼ぶ場合の作品スラッグ */
+  workSlug?: string;
+  heading?: string;
+  body?: string;
+}
+
+const {
+  location,
+  workSlug,
+  heading = 'この作品の登場人物を、自分のペースで整理する',
+  body = 'CastMemo なら、自分が見た範囲の人物だけをメモして相関図にできます。ネタバレを気にせず「この人、誰だっけ？」を解決。',
+} = Astro.props;
+---
+
+<aside class="app-cta brand" aria-label="CastMemo アプリの案内">
+  <div class="app-cta__icon">
+    <AppIcon size={72} alt="" />
+  </div>
+  <div class="app-cta__text">
+    <h2 class="app-cta__heading">{heading}</h2>
+    <p class="app-cta__body">{body}</p>
+    <AppStoreButton location={location} workSlug={workSlug} variant="primary" />
+  </div>
+</aside>
+
+<style>
+  .app-cta {
+    display: grid;
+    gap: 1rem;
+    padding: 1.6rem;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(120% 140% at 100% 0%, rgba(79, 124, 255, 0.25), transparent 60%),
+      var(--navy-800);
+    box-shadow: var(--shadow-brand);
+  }
+
+  .app-cta__icon {
+    width: 3.5rem;
+  }
+
+  .app-cta__heading {
+    font-size: 1.15rem;
+    margin: 0 0 0.5rem;
+    color: var(--text-on-dark);
+  }
+
+  .app-cta__body {
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+    margin: 0 0 1.15rem;
+  }
+
+  @media (min-width: 34rem) {
+    .app-cta {
+      grid-template-columns: auto 1fr;
+      align-items: start;
+      gap: 1.35rem;
+      padding: 1.9rem;
+    }
+    .app-cta__icon {
+      width: 4.5rem;
+    }
+  }
+</style>

@@ -1,0 +1,117 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WorkCard from '../../components/WorkCard.astro';
+import AppCtaBanner from '../../components/AppCtaBanner.astro';
+import { getPublishedWorks } from '../../lib/works';
+import { CATEGORY_LABELS } from '../../lib/labels';
+
+const works = await getPublishedWorks();
+
+// 将来カテゴリフィルタを追加しやすいよう、公開作品に含まれるカテゴリを集計しておく。
+// （今回フィルタ UI は未実装。件数バッジの表示のみ）
+const categoryCounts = new Map<string, number>();
+for (const w of works) {
+  categoryCounts.set(w.data.category, (categoryCounts.get(w.data.category) ?? 0) + 1);
+}
+
+const title = '作品ガイド';
+const description =
+  '作品別の登場人物ガイド一覧。小説・ドラマ・映画・漫画の人物関係を、ネタバレ方針を明記して整理しています。';
+---
+
+<BaseLayout title={title} description={description}>
+  <!-- ヘッダー帯（ブランド・コンパクト） -->
+  <section class="works-head brand">
+    <div class="container">
+      <p class="eyebrow">作品ガイド</p>
+      <h1>作品別の登場人物ガイド</h1>
+      <p class="works-head__lede">
+        「この人、誰だっけ？」をなくすための、作品ごとの人物ガイドです。
+        アプリを入れなくても読めます。各記事にはネタバレ方針を明記しています。
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      {works.length > 0 ? (
+        <>
+          {/* 将来カテゴリフィルタを置く場所（今回は集計バッジのみ・非リンク） */}
+          <ul class="cat-summary" aria-label="収録カテゴリ">
+            <li class="tag tag--neutral">すべて {works.length}</li>
+            {[...categoryCounts.entries()].map(([cat, count]) => (
+              <li class="tag tag--neutral">{CATEGORY_LABELS[cat] ?? cat} {count}</li>
+            ))}
+          </ul>
+
+          <div class="card-grid card-grid--fill works-list">
+            {works.map((work) => (
+              <WorkCard work={work} />
+            ))}
+          </div>
+        </>
+      ) : (
+        <div class="card works-empty">
+          <p>現在、公開中の作品ガイドはありません。準備が整い次第、順次公開します。</p>
+          <p class="works-empty__hint">
+            登場人物を今すぐ整理したい場合は、<a href="/app/">CastMemoアプリ</a>が使えます。
+          </p>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <section class="section section--muted">
+    <div class="container prose">
+      <AppCtaBanner location="works-index" />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .works-head {
+    padding-block: clamp(2.25rem, 6vw, 3.25rem);
+    background:
+      radial-gradient(90% 130% at 90% 0%, rgba(79, 124, 255, 0.2), transparent 55%),
+      var(--navy-900);
+  }
+
+  .works-head h1 {
+    margin-bottom: 0.5rem;
+  }
+
+  .works-head__lede {
+    color: var(--color-text-muted);
+    max-width: 40rem;
+    margin: 0;
+    font-size: 1rem;
+  }
+
+  .cat-summary {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0;
+    margin: 0 0 1.5rem;
+  }
+
+  .cat-summary li {
+    font-size: 0.8rem;
+  }
+
+  .works-list {
+    margin-top: 0;
+  }
+
+  .works-empty {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .works-empty__hint {
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+</style>

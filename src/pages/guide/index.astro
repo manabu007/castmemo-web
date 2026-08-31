@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = 'ガイド';
+const description =
+  'CastMemo の使い方や、登場人物の整理のコツをまとめるガイド記事の一覧です（準備中）。';
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="section">
+    <div class="container prose">
+      <p class="eyebrow">ガイド</p>
+      <h1>ガイド記事</h1>
+      <p class="lede">
+        CastMemo の使い方や、登場人物・人物関係を整理するコツをまとめた記事を掲載予定です。
+      </p>
+      <div class="card placeholder">
+        <p>ガイド記事は現在準備中です。公開までしばらくお待ちください。</p>
+        <p><a href="/works/">作品ガイド一覧を見る</a></p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .placeholder {
+    margin-top: 1.5rem;
+  }
+  .placeholder p:last-child {
+    margin-bottom: 0;
+  }
+</style>

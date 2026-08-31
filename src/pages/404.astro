@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="ページが見つかりません" noindex={true}>
+  <section class="section">
+    <div class="container prose not-found">
+      <p class="eyebrow">404</p>
+      <h1>ページが見つかりません</h1>
+      <p class="lede">
+        お探しのページは移動または削除された可能性があります。URL をご確認ください。
+      </p>
+      <ul class="not-found__links">
+        <li><a href="/">トップページ</a></li>
+        <li><a href="/works/">作品ガイド一覧</a></li>
+        <li><a href="/app/">CastMemoについて</a></li>
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found__links {
+    padding-left: 1.2rem;
+  }
+  .not-found__links li {
+    margin-bottom: 0.4rem;
+  }
+</style>

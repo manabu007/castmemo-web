@@ -1,0 +1,404 @@
+---
+/**
+ * アプリ画面のビジュアル（スマホフレーム内に表示）。
+ *
+ * 表示ロジック（画像優先）:
+ *   1. public/images/app-screenshot-home.png があれば、それをフレーム内に表示
+ *   2. 無ければ、下の HTML/CSS 製デモUI（CastMemo ホーム画面風）を表示
+ *
+ * デモUI は「登場人物を作品ごとに管理するアプリ」だと初見で伝わることを狙った
+ * 再現で、実在の作品名・人物名・作品画像・外部素材は一切使用していない。
+ * 作品はすべて架空。作品画像の代わりに作品名の頭文字アイコンを表示する。
+ *
+ * コンテナクエリ単位（cqw）でフレーム幅に追従してスケールするため、
+ * Retina でも軽量、サイズ変更に強く、文言も下の配列を書き換えるだけで変えられる。
+ */
+import { publicAsset } from '../lib/assets';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+const shot = publicAsset('/images/app-screenshot-home.png');
+
+/** デモ用の架空作品（実在作品・人物とは一切無関係） */
+const pinnedWork = { title: '星降る街', genre: 'ドラマ', count: 12 };
+const works = [
+  { title: '沈黙の庭', genre: '小説', count: 17 },
+  { title: '北風の手紙', genre: '映画', count: 8 },
+  { title: '夏の記憶', genre: '漫画', count: 21 },
+  { title: '遠い波音', genre: 'ドラマ', count: 6 },
+];
+
+/** 頭文字（サロゲートペア対応で先頭1文字） */
+const initial = (s: string) => [...s][0] ?? '';
+---
+
+<div class:list={['phone', className]} aria-hidden="true">
+  <div class="phone__frame">
+    <div class="phone__notch"></div>
+    <div class="phone__screen">
+      {
+        shot ? (
+          <img src={shot} alt="" width="300" height="640" loading="lazy" decoding="async" />
+        ) : (
+          <div class="demo">
+            <div class="demo__statusbar">
+              <span class="demo__time">9:41</span>
+              <span class="demo__dots"><i></i><i></i><i></i></span>
+            </div>
+
+            <div class="demo__header">
+              <span class="demo__wordmark">castmemo</span>
+              <span class="demo__avatar-me" aria-hidden="true"></span>
+            </div>
+
+            <div class="demo__search">
+              <svg viewBox="0 0 24 24" class="demo__search-icon"><circle cx="11" cy="11" r="6.5" /><path d="M20 20l-4-4" /></svg>
+              <span>作品を検索</span>
+            </div>
+
+            <div class="demo__sort">
+              <svg viewBox="0 0 24 24"><path d="M7 5v14M7 5 4 8M7 5l3 3M17 19V5M17 19l-3-3M17 19l3-3" /></svg>
+              <span>登録が新しい順</span>
+            </div>
+
+            <p class="demo__section"><svg viewBox="0 0 24 24" class="demo__pin"><path d="M12 3l2.5 5 5.5.8-4 3.9 1 5.5L12 16.5 7.5 21.1l1-5.5-4-3.9L10 8z"/></svg>固定</p>
+
+            <article class="wcard wcard--pinned">
+              <span class="wcard__bar"></span>
+              <span class="wcard__thumb">{initial(pinnedWork.title)}</span>
+              <span class="wcard__body">
+                <span class="wcard__title">{pinnedWork.title}</span>
+                <span class="wcard__meta">
+                  <span class="wcard__tag">{pinnedWork.genre}</span>
+                  <span class="wcard__count">{pinnedWork.count}人登録済み</span>
+                </span>
+              </span>
+              <span class="wcard__more"><i></i><i></i><i></i></span>
+            </article>
+
+            <p class="demo__section">作品</p>
+
+            {works.map((w) => (
+              <article class="wcard">
+                <span class="wcard__bar"></span>
+                <span class="wcard__thumb">{initial(w.title)}</span>
+                <span class="wcard__body">
+                  <span class="wcard__title">{w.title}</span>
+                  <span class="wcard__meta">
+                    <span class="wcard__tag">{w.genre}</span>
+                    <span class="wcard__count">{w.count}人登録済み</span>
+                  </span>
+                </span>
+                <span class="wcard__more"><i></i><i></i><i></i></span>
+              </article>
+            ))}
+
+            <div class="demo__fade"></div>
+            <button class="demo__fab" type="button" tabindex="-1" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+            </button>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</div>
+
+<style>
+  .phone {
+    width: min(78vw, 17.5rem);
+    margin-inline: auto;
+  }
+
+  .phone__frame {
+    position: relative;
+    padding: 0.55rem;
+    border-radius: 2rem;
+    background: linear-gradient(160deg, #34365a, #191a2c 70%);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: var(--shadow-brand);
+  }
+
+  .phone__notch {
+    position: absolute;
+    top: 0.55rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 32%;
+    height: 1rem;
+    background: #0d0e19;
+    border-radius: 0 0 0.8rem 0.8rem;
+    z-index: 3;
+  }
+
+  .phone__screen {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    background: #141524;
+    aspect-ratio: 292 / 604;
+    container-type: inline-size;
+  }
+
+  .phone__screen > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ===== デモUI（CastMemo ホーム画面風・架空作品のみ） ===== */
+  .demo {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120% 70% at 100% 0%, #21233f 0%, #16172a 55%);
+    color: #f7f7fb;
+    padding: 3.2cqw 4.4cqw 0;
+    font-family: var(--font-sans);
+    overflow: hidden;
+  }
+
+  .demo__statusbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1cqw 2.4cqw;
+  }
+
+  .demo__time {
+    font-size: 3.3cqw;
+    font-weight: 700;
+  }
+
+  .demo__dots {
+    display: inline-flex;
+    gap: 1cqw;
+  }
+
+  .demo__dots i {
+    width: 1.5cqw;
+    height: 1.5cqw;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.55);
+  }
+
+  .demo__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 3cqw;
+  }
+
+  .demo__wordmark {
+    font-size: 6.4cqw;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+
+  .demo__avatar-me {
+    width: 7cqw;
+    height: 7cqw;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c5cff, #4f7cff);
+  }
+
+  .demo__search {
+    display: flex;
+    align-items: center;
+    gap: 2cqw;
+    padding: 2.7cqw 3.4cqw;
+    border-radius: 3.4cqw;
+    background: #23253f;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    color: #a9abc6;
+    font-size: 3.7cqw;
+  }
+
+  .demo__search-icon {
+    width: 4cqw;
+    height: 4cqw;
+    flex: none;
+    fill: none;
+    stroke: #a9abc6;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+  }
+
+  .demo__sort {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.6cqw;
+    margin: 3cqw 0 1cqw;
+    padding: 1.7cqw 3cqw;
+    border-radius: 999px;
+    background: rgba(124, 92, 255, 0.16);
+    color: #c9bcff;
+    font-size: 3.3cqw;
+    font-weight: 700;
+  }
+
+  .demo__sort svg {
+    width: 3.4cqw;
+    height: 3.4cqw;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .demo__section {
+    display: flex;
+    align-items: center;
+    gap: 1.6cqw;
+    margin: 3.4cqw 0 2.2cqw;
+    font-size: 3.6cqw;
+    font-weight: 700;
+    color: #d7d8ea;
+  }
+
+  .demo__pin {
+    width: 3.6cqw;
+    height: 3.6cqw;
+    fill: #7c5cff;
+  }
+
+  .wcard {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 3cqw;
+    padding: 3.2cqw 3cqw 3.2cqw 4.6cqw;
+    margin-bottom: 2.4cqw;
+    border-radius: 4cqw;
+    background: #22243c;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    overflow: hidden;
+  }
+
+  .wcard--pinned {
+    background: #262845;
+  }
+
+  .wcard__bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1.8cqw;
+    background: linear-gradient(180deg, #7c5cff, #4f7cff);
+  }
+
+  .wcard__thumb {
+    flex: none;
+    width: 11cqw;
+    height: 11cqw;
+    border-radius: 3cqw;
+    display: grid;
+    place-items: center;
+    background: #171930;
+    border: 1px solid rgba(124, 92, 255, 0.35);
+    color: #c9bcff;
+    font-size: 5cqw;
+    font-weight: 800;
+  }
+
+  .wcard__body {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.6cqw;
+  }
+
+  .wcard__title {
+    font-size: 4.6cqw;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .wcard__meta {
+    display: flex;
+    align-items: center;
+    gap: 2cqw;
+  }
+
+  .wcard__tag {
+    padding: 0.6cqw 2cqw;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.09);
+    color: #cfd0e4;
+    font-size: 3cqw;
+    font-weight: 700;
+  }
+
+  .wcard__count {
+    color: #9a9cb8;
+    font-size: 3.2cqw;
+  }
+
+  .wcard__more {
+    flex: none;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 1cqw;
+    padding: 1cqw;
+  }
+
+  .wcard__more i {
+    width: 1.5cqw;
+    height: 1.5cqw;
+    border-radius: 50%;
+    background: #7f819e;
+  }
+
+  .demo__fade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 18cqw;
+    background: linear-gradient(180deg, rgba(22, 23, 42, 0), #16172a 85%);
+  }
+
+  .demo__fab {
+    position: absolute;
+    right: 5cqw;
+    bottom: 5cqw;
+    width: 13cqw;
+    height: 13cqw;
+    border: none;
+    border-radius: 4.5cqw;
+    background: linear-gradient(135deg, #7c5cff, #4f7cff);
+    box-shadow: 0 6cqw 14cqw rgba(79, 92, 255, 0.45);
+    display: grid;
+    place-items: center;
+    cursor: default;
+  }
+
+  .demo__fab svg {
+    width: 6cqw;
+    height: 6cqw;
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2.6;
+    stroke-linecap: round;
+  }
+
+  @media (min-width: 64rem) {
+    .phone {
+      width: min(30vw, 17.5rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .demo * {
+      animation: none !important;
+    }
+  }
+</style>

@@ -1,0 +1,78 @@
+---
+import '../styles/global.css';
+import { SITE_LOCALE, BRAND_COLOR_NAVY } from '../consts';
+import Seo from '../components/Seo.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogType?: 'website' | 'article';
+  image?: string;
+  noindex?: boolean;
+}
+
+const { title, description, ogType, image, noindex } = Astro.props;
+---
+
+<!doctype html>
+<html lang={SITE_LOCALE}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content={BRAND_COLOR_NAVY} />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <Seo title={title} description={description} ogType={ogType} image={image} noindex={noindex} />
+
+    <!-- ページ固有の <head> 追加分（JSON-LD など） -->
+    <slot name="head" />
+  </head>
+
+  <body>
+    <a href="#main" class="skip-link">本文へスキップ</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <!--
+      Analytics シム（プレースホルダー）。
+      現時点では実際の GA タグ・測定 ID は入れていない。
+      App Store CTA など data-analytics-event を持つ要素のクリックを
+      window.dataLayer に push するだけ。将来 GA4 / GTM を読み込めば計測が有効になる。
+    -->
+    <script>
+      type AnalyticsPayload = {
+        event: string;
+        location: string | null;
+        work: string | null;
+        href: string | null;
+      };
+
+      window.dataLayer = window.dataLayer || [];
+
+      document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement | null;
+        const el = target?.closest<HTMLElement>('[data-analytics-event]');
+        if (!el) return;
+
+        const payload: AnalyticsPayload = {
+          event: el.dataset.analyticsEvent ?? 'unknown',
+          location: el.dataset.analyticsLocation ?? null,
+          work: el.dataset.analyticsWork ?? null,
+          href: el.getAttribute('href'),
+        };
+
+        window.dataLayer.push(payload);
+      });
+    </script>
+  </body>
+</html>

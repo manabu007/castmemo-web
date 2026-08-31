@@ -1,0 +1,504 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AppStoreButton from '../components/AppStoreButton.astro';
+import AppIcon from '../components/AppIcon.astro';
+import AppScreenshot from '../components/AppScreenshot.astro';
+import WorkCard from '../components/WorkCard.astro';
+import JsonLd from '../components/JsonLd.astro';
+import { getFeaturedWorks } from '../lib/works';
+import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, APP_STORE_URL } from '../consts';
+
+const featuredWorks = await getFeaturedWorks(3);
+
+const features = [
+  {
+    title: '登場人物を作品ごとに整理',
+    body: '名前・特徴・自分のメモを作品単位でまとめて管理。長編シリーズや群像劇でも人物を見失いません。',
+  },
+  {
+    title: '人物関係を相関図で確認',
+    body: '登録した人物どうしの関係を線でつなぎ、自分だけの相関図として整理できます。',
+  },
+  {
+    title: '自分が見た範囲だけ記録',
+    body: '検索による先の展開のネタバレを避けながら、自分が作品内で出会った人物だけを残せます。',
+  },
+  {
+    title: 'さまざまな作品に対応',
+    body: '小説・ドラマ・映画・漫画など、ジャンルを問わず使えます。',
+  },
+];
+
+// --- 構造化データ（実態に合う範囲のみ。評価・価格・レビュー件数は含めない） ---
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE_NAME,
+    url: SITE_URL + '/',
+    description: SITE_DESCRIPTION,
+    inLanguage: 'ja',
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: SITE_NAME,
+    applicationCategory: 'LifestyleApplication',
+    operatingSystem: 'iOS',
+    url: APP_STORE_URL,
+    description:
+      '小説・ドラマ・映画・漫画の登場人物を、自分だけのメモと相関図で整理できるアプリ。',
+  },
+];
+---
+
+<BaseLayout>
+  <JsonLd slot="head" data={jsonLd} />
+
+  <!-- ===== Hero（ブランド / ダーク） ===== -->
+  <section class="hero brand">
+    <div class="hero__bg" aria-hidden="true">
+      <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="hero-line" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#7c5cff" />
+            <stop offset="1" stop-color="#4f7cff" />
+          </linearGradient>
+        </defs>
+        <g stroke="url(#hero-line)" stroke-width="1.4" fill="none" opacity="0.5">
+          <path d="M40 60 L150 120 M150 120 L120 230 M150 120 L300 90 M300 90 L360 200 M120 230 L300 90" />
+        </g>
+        <g fill="url(#hero-line)" opacity="0.85">
+          <circle cx="40" cy="60" r="4" />
+          <circle cx="150" cy="120" r="5" />
+          <circle cx="120" cy="230" r="4" />
+          <circle cx="300" cy="90" r="5" />
+          <circle cx="360" cy="200" r="4" />
+        </g>
+      </svg>
+    </div>
+
+    <div class="container hero__inner">
+      <div class="hero__copy">
+        <p class="eyebrow">CastMemo 公式サイト</p>
+        <h1 class="hero__title">
+          <span>登場人物を整理して、</span><span>もっと作品を楽しむ。</span>
+        </h1>
+        <p class="hero__sub">
+          小説・ドラマ・映画・漫画の「この人、誰だっけ？」を、自分だけの人物メモと相関図で整理できるアプリ。
+        </p>
+        <div class="hero__cta">
+          <AppStoreButton label="App Storeで見る" location="hero" variant="primary" />
+          <a href="/works/" class="btn btn--ghost">作品ガイドを見る</a>
+        </div>
+      </div>
+
+      <div class="hero__visual">
+        <AppIcon size={112} alt={`${SITE_NAME} アプリアイコン`} class="hero__icon" />
+        <AppScreenshot class="hero__shot" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 困っていませんか（読み物 / ライト） ===== -->
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow">こんな経験、ありませんか</p>
+      <h2>こんなことで困っていませんか？</h2>
+      <div class="card-grid card-grid--2 worry-grid">
+        <article class="card worry">
+          <span class="worry__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M9.4 9.3a2.7 2.7 0 0 1 5.2.9c0 1.8-2.6 2.3-2.6 3.9M12 17.2h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </span>
+          <h3>この人、誰だったっけ？</h3>
+          <p>登場人物が多い作品では、名前と顔（役割）が一致しなくなりがち。読み返す手も止まります。</p>
+        </article>
+        <article class="card worry">
+          <span class="worry__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="6" cy="7" r="2.4" stroke="currentColor" stroke-width="1.8"/><circle cx="18" cy="8" r="2.4" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="17" r="2.4" stroke="currentColor" stroke-width="1.8"/><path d="M8 8.2 10.4 15M16 9 13.6 15M8.3 7.2 15.6 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="0.5 3"/></svg>
+          </span>
+          <h3>人物関係が分からなくなった</h3>
+          <p>誰が味方で誰が敵か、家族なのか同僚なのか。関係が入り組むほど話を追いきれません。</p>
+        </article>
+        <article class="card worry">
+          <span class="worry__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </span>
+          <h3>久しぶりに続きを見たら忘れてしまった</h3>
+          <p>シーズンの間隔が空いたり、積んでいた本を再開したり。前回の記憶がよみがえりません。</p>
+        </article>
+        <article class="card worry">
+          <span class="worry__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M2.5 12S5.5 6 12 6s9.5 6 9.5 6-3 6-9.5 6-9.5-6-9.5-6Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="2.6" stroke="currentColor" stroke-width="1.8"/><path d="M4 20 20 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </span>
+          <h3>検索したらネタバレを見てしまった</h3>
+          <p>人物名を調べただけなのに、まだ見ていない展開や「正体」まで目に入ってしまうことがあります。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CastMemoでできること（読み物 / 淡い背景） ===== -->
+  <section class="section section--muted">
+    <div class="container">
+      <p class="eyebrow">CastMemoでできること</p>
+      <h2>頭の中の人物メモを、そのままアプリに。</h2>
+      <div class="card-grid card-grid--2">
+        {features.map((f, i) => (
+          <div class="card feature">
+            <span class="feature__num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            <h3>{f.title}</h3>
+            <p class="feature__body">{f.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ネタバレセクション（ブランド / ダーク・強め） ===== -->
+  <section class="section spoiler brand">
+    <div class="container spoiler__inner">
+      <p class="eyebrow">CastMemo が大切にしていること</p>
+      <h2 class="spoiler__title">
+        <span>登場人物を調べたい。</span><span>でも、先の展開は知りたくない。</span>
+      </h2>
+      <p class="spoiler__body">
+        Webで登場人物を検索すると、まだ見ていない展開や人物の正体まで目に入ることがあります。
+        CastMemo なら、自分が作品内で出会った人物だけを登録し、自分が見たところまでの人物情報を整理できます。
+      </p>
+      <AppStoreButton label="App Storeで見る" location="spoiler-section" variant="primary" />
+    </div>
+  </section>
+
+  <!-- ===== 作品ガイド（読み物 / 淡い背景） ===== -->
+  <section class="section section--muted">
+    <div class="container">
+      <p class="eyebrow">作品ガイド</p>
+      <h2>作品別の登場人物ガイド</h2>
+      <p class="lede prose">
+        ネタバレ方針を明記した、作品ごとの人物ガイドを公開していきます。「今すぐざっくり確認したい」ときにどうぞ。
+      </p>
+
+      {featuredWorks.length > 0 ? (
+        <>
+          <div class="card-grid card-grid--fill works-preview">
+            {featuredWorks.map((work) => (
+              <WorkCard work={work} />
+            ))}
+          </div>
+          <p class="works-preview__more">
+            <a href="/works/" class="btn btn--ghost">作品ガイド一覧を見る</a>
+          </p>
+        </>
+      ) : (
+        <div class="card works-empty">
+          <p>作品ガイドは現在準備中です。順次公開していきます。</p>
+          <a href="/works/" class="btn btn--ghost">作品ガイド一覧へ</a>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- ===== Web ガイド と アプリ の役割の違い（読み物 / ライト） ===== -->
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow">Webガイド と アプリ</p>
+      <h2>ざっくり確認する Web、自分専用に整理するアプリ。</h2>
+      <p class="lede prose">
+        CastMemo公式サイトでは、ネタバレに配慮した人物ガイドを公開しています。
+        自分が今見ている範囲だけで人物を整理したい場合は、CastMemoアプリが便利です。
+      </p>
+      <div class="card-grid card-grid--2 roles">
+        <div class="card role">
+          <p class="role__label">この公式サイト（Web）</p>
+          <h3>今すぐざっくり確認する</h3>
+          <ul>
+            <li>アプリを入れなくても読める</li>
+            <li>作品ごとにネタバレ方針を明記</li>
+            <li>「主要人物だけ思い出したい」に</li>
+          </ul>
+          <a href="/works/" class="role__link">作品ガイドを見る &rarr;</a>
+        </div>
+        <div class="card role role--app">
+          <p class="role__label">CastMemo アプリ</p>
+          <h3>自分専用に人物を整理する</h3>
+          <ul>
+            <li>自分が出会った人物だけを登録</li>
+            <li>自分だけの相関図をつくれる</li>
+            <li>見た範囲を超えるネタバレがない</li>
+          </ul>
+          <AppStoreButton label="App Storeで見る" location="roles-section" variant="ghost" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 最後のひと押し（ブランド） ===== -->
+  <section class="closing brand">
+    <div class="container closing__inner">
+      <AppIcon size={64} alt="" class="closing__icon" />
+      <h2 class="closing__title">まずは、いま見ている作品から。</h2>
+      <p class="closing__body">読んでいる本や見ているドラマの登場人物を、CastMemo に書き出してみてください。</p>
+      <AppStoreButton label="App Storeで見る" location="closing" variant="primary" />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ===== Hero ===== */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(2.75rem, 9vw, 5.5rem);
+  }
+
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.55;
+    -webkit-mask-image: radial-gradient(70% 70% at 70% 30%, #000 30%, transparent 75%);
+    mask-image: radial-gradient(70% 70% at 70% 30%, #000 30%, transparent 75%);
+  }
+
+  .hero__bg svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero__inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: clamp(2rem, 6vw, 3.5rem);
+    align-items: center;
+  }
+
+  .hero__inner > * {
+    min-width: 0;
+  }
+
+  .hero__title {
+    font-size: clamp(1.6rem, 6.2vw, 3rem);
+    line-height: 1.34;
+    margin: 0 0 1rem;
+  }
+
+  .hero__title span {
+    display: block;
+  }
+
+  .hero__sub {
+    font-size: 1.06rem;
+    color: var(--color-text-muted);
+    max-width: 32rem;
+    margin: 0;
+  }
+
+  .hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+  }
+
+  .hero__visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .hero__icon {
+    width: 4.5rem;
+  }
+
+  @media (min-width: 64rem) {
+    .hero__inner {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+
+    .hero__visual {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+
+    .hero__icon {
+      width: 6rem;
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  /* ===== 困っていませんか ===== */
+  .worry {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .worry__icon {
+    display: inline-flex;
+    width: 2.5rem;
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: var(--color-accent-soft);
+    color: var(--color-accent-strong);
+    margin-bottom: 0.35rem;
+  }
+
+  .worry__icon svg {
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+
+  .worry h3 {
+    font-size: 1.02rem;
+    margin: 0;
+  }
+
+  .worry p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.92rem;
+  }
+
+  /* ===== できること ===== */
+  .feature {
+    position: relative;
+  }
+
+  .feature__num {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: transparent;
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    background-clip: text;
+    margin-bottom: 0.35rem;
+  }
+
+  .feature__body {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.92rem;
+  }
+
+  /* ===== ネタバレ ===== */
+  .spoiler {
+    background:
+      radial-gradient(90% 120% at 15% 0%, rgba(124, 92, 255, 0.28), transparent 55%),
+      var(--navy-900);
+  }
+
+  .spoiler__inner {
+    max-width: 40rem;
+  }
+
+  .spoiler__title {
+    font-size: clamp(1.35rem, 4.6vw, 2.1rem);
+    line-height: 1.42;
+  }
+
+  .spoiler__title span {
+    display: block;
+  }
+
+  .spoiler__body {
+    color: var(--color-text-muted);
+    font-size: 1.02rem;
+    margin-bottom: 1.75rem;
+  }
+
+  /* ===== 作品ガイド ===== */
+  .works-preview {
+    margin-top: 1.75rem;
+  }
+
+  .works-preview__more {
+    margin-top: 1.75rem;
+    margin-bottom: 0;
+  }
+
+  .works-empty {
+    margin-top: 1.75rem;
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+  }
+
+  /* ===== 役割の違い ===== */
+  .roles {
+    margin-top: 1.75rem;
+  }
+
+  .role ul {
+    margin: 0.75rem 0 1.15rem;
+    padding-left: 1.15rem;
+    color: var(--color-text-muted);
+    font-size: 0.92rem;
+  }
+
+  .role li {
+    margin-bottom: 0.3rem;
+  }
+
+  .role__label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--color-text-subtle);
+    margin: 0 0 0.4rem;
+  }
+
+  .role h3 {
+    margin: 0;
+  }
+
+  .role__link {
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+  }
+
+  .role--app {
+    border-color: var(--color-border-strong);
+    background:
+      radial-gradient(120% 130% at 100% 0%, var(--gradient-brand-soft), transparent 60%),
+      var(--color-surface);
+  }
+
+  /* ===== 最後のひと押し ===== */
+  .closing {
+    background:
+      radial-gradient(80% 140% at 50% 0%, rgba(79, 124, 255, 0.22), transparent 60%),
+      var(--navy-800);
+    padding-block: clamp(2.75rem, 8vw, 4.5rem);
+    text-align: center;
+  }
+
+  .closing__inner {
+    max-width: 34rem;
+    display: grid;
+    justify-items: center;
+    gap: 0.4rem;
+  }
+
+  .closing__icon {
+    width: 4rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .closing__title {
+    margin: 0;
+  }
+
+  .closing__body {
+    color: var(--color-text-muted);
+    margin: 0.25rem 0 1.5rem;
+  }
+</style>

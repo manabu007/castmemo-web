@@ -1,0 +1,72 @@
+---
+/**
+ * App Store CTA 共通コンポーネント。
+ *
+ * - 遷移先は consts.ts の APP_STORE_URL（Apple 正式形式）で一元管理
+ * - 外部リンクとして rel / 別タブを適切に付与
+ * - どのページ・どの位置・どの作品から押されたかを data-* 属性で保持し、
+ *   将来 Analytics（例: app_store_click イベント）を差し込めるようにする
+ *
+ * クリック計測の受け口は BaseLayout.astro の analytics シムを参照。
+ * 現時点では実際の GA タグ・測定 ID は入れていない。
+ *
+ * 見た目:
+ * - variant="primary" … 紫→青グラデーション（global.css の .btn--primary）
+ * - variant="ghost"   … フチのみ。ダーク/ライト両方でトークンに追従
+ */
+import { APP_STORE_URL } from '../consts';
+
+interface Props {
+  /** ボタン文言 */
+  label?: string;
+  /** 押された位置の識別子（例: hero, footer, work-cta, app-page） */
+  location: string;
+  /** 作品ページからの遷移なら作品スラッグ */
+  workSlug?: string;
+  /** 見た目のバリエーション */
+  variant?: 'primary' | 'ghost';
+  /** 幅いっぱいに広げる */
+  block?: boolean;
+  /** 追加クラス */
+  class?: string;
+}
+
+const {
+  label = 'App StoreでCastMemoを見る',
+  location,
+  workSlug,
+  variant = 'primary',
+  block = false,
+  class: className,
+} = Astro.props;
+---
+
+<a
+  class:list={['btn', `btn--${variant}`, { 'btn--block': block }, 'app-store-btn', className]}
+  href={APP_STORE_URL}
+  target="_blank"
+  rel="noopener external"
+  data-analytics-event="app_store_click"
+  data-analytics-location={location}
+  data-analytics-work={workSlug}
+>
+  <svg class="app-store-btn__mark" width="16" height="18" viewBox="0 0 16 18" aria-hidden="true" focusable="false">
+    <path
+      fill="currentColor"
+      d="M13.6 13.5c-.24.55-.52 1.06-.85 1.53-.45.64-.81 1.08-1.1 1.33-.44.4-.92.61-1.43.62-.37 0-.81-.1-1.32-.32-.52-.21-.99-.31-1.42-.31-.45 0-.94.1-1.46.31-.53.22-.95.33-1.28.34-.49.02-.98-.2-1.46-.65-.31-.27-.69-.72-1.14-1.36-.48-.68-.88-1.47-1.19-2.37C.83 11.42.66 10.48.66 9.57c0-1.04.23-1.94.68-2.69a3.96 3.96 0 0 1 1.42-1.43 3.83 3.83 0 0 1 1.92-.54c.39 0 .9.12 1.53.35.63.24 1.03.35 1.21.35.13 0 .58-.14 1.34-.41.72-.25 1.32-.36 1.82-.31 1.34.11 2.35.64 3.02 1.59-1.2.73-1.79 1.74-1.78 3.05.01 1.02.38 1.86 1.1 2.53.33.31.69.55 1.1.72-.09.26-.18.5-.28.73ZM10.63.86c0 .78-.28 1.5-.85 2.17-.68.79-1.51 1.25-2.4 1.18a2.4 2.4 0 0 1-.02-.29c0-.75.33-1.55.9-2.2.29-.34.66-.61 1.1-.83.44-.21.86-.33 1.25-.35.01.11.02.22.02.33Z"
+    />
+  </svg>
+  <span>{label}</span>
+  <span class="visually-hidden">（App Store・外部サイト・新しいタブで開きます）</span>
+</a>
+
+<style>
+  .app-store-btn__mark {
+    flex: none;
+    margin-top: -1px;
+  }
+
+  .btn--block {
+    width: 100%;
+  }
+</style>

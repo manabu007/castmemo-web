@@ -1,0 +1,205 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AppStoreButton from '../../components/AppStoreButton.astro';
+import AppIcon from '../../components/AppIcon.astro';
+import AppScreenshot from '../../components/AppScreenshot.astro';
+import JsonLd from '../../components/JsonLd.astro';
+import { SITE_NAME, SITE_URL, APP_STORE_URL } from '../../consts';
+
+const title = 'CastMemoについて';
+const description =
+  'CastMemo は、小説・ドラマ・映画・漫画の登場人物を、自分だけのメモと相関図で整理できる iOS アプリです。';
+
+const capabilities = [
+  {
+    title: '登場人物を作品ごとに整理',
+    body: '作品ごとに人物カードを作り、名前・特徴・関係・自分の覚え書きをまとめられます。長編シリーズや群像劇でも、人物を見失いません。',
+  },
+  {
+    title: '人物関係を相関図で確認',
+    body: '人物どうしを線でつなぎ、「誰と誰がどういう関係か」を図で把握できます。文章のメモだけでは掴みにくい全体像が見えます。',
+  },
+  {
+    title: 'ネタバレを避けやすい',
+    body: '記録するのは「自分が読んだ・見た範囲」だけ。アプリが先の展開を教えてくることはありません。検索で不意にネタバレを踏む心配なく、人物を整理できます。',
+  },
+  {
+    title: 'ジャンルを問わず使える',
+    body: '小説・ドラマ・映画・漫画など、登場人物が多くて関係が入り組む作品ならどれでも。',
+  },
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: SITE_NAME,
+  applicationCategory: 'LifestyleApplication',
+  operatingSystem: 'iOS',
+  url: APP_STORE_URL,
+  inLanguage: 'ja',
+  description,
+  mainEntityOfPage: new URL('/app/', SITE_URL).href,
+};
+---
+
+<BaseLayout title={title} description={description}>
+  <JsonLd slot="head" data={jsonLd} />
+
+  <!-- ===== Hero（ブランド） ===== -->
+  <section class="app-hero brand">
+    <div class="container app-hero__inner">
+      <div class="app-hero__copy">
+        <p class="eyebrow">CastMemoについて</p>
+        <h1 class="app-hero__title">
+          <span>「この人、誰だっけ？」を</span><span>なくすアプリ</span>
+        </h1>
+        <p class="app-hero__sub">
+          CastMemo は、小説・ドラマ・映画・漫画の<strong>登場人物を整理するための iOS アプリ</strong>です。
+          自分だけのメモと相関図で、作品の人物関係を手元にまとめられます。
+        </p>
+        <AppStoreButton location="app-page-hero" variant="primary" />
+      </div>
+      <div class="app-hero__visual">
+        <AppIcon size={104} alt={`${SITE_NAME} アプリアイコン`} class="app-hero__icon" />
+        <AppScreenshot />
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 概要（読み物） ===== -->
+  <section class="section">
+    <div class="container prose">
+      <p class="eyebrow">どんなアプリか</p>
+      <h2>読んだところまでの人物を、自分の言葉で。</h2>
+      <p>
+        物語が面白くなるほど人物は増え、関係は込み入っていきます。
+        CastMemo は、その「頭の中の整理」をアプリに移すためのものです。
+        ネタバレサイトのように先の情報を見せることはありません。
+        あなたが登録した人物と関係だけが、あなたの相関図になります。
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== 機能（読み物 / 淡い背景） ===== -->
+  <section class="section section--muted">
+    <div class="container">
+      <p class="eyebrow">主な機能</p>
+      <h2>CastMemoでできること</h2>
+      <div class="card-grid card-grid--2">
+        {capabilities.map((c) => (
+          <div class="card">
+            <h3 class="cap__title">{c.title}</h3>
+            <p class="cap__body">{c.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA（ブランド） ===== -->
+  <section class="closing brand">
+    <div class="container closing__inner">
+      <AppIcon size={64} alt="" class="closing__icon" />
+      <h2 class="closing__title">まずは手元の作品で試す</h2>
+      <p class="closing__body">
+        いま読んでいる本や見ているドラマの登場人物を、CastMemo に書き出してみてください。
+      </p>
+      <AppStoreButton location="app-page-footer" variant="primary" />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .app-hero {
+    padding-block: clamp(2.5rem, 8vw, 4.5rem);
+    background:
+      radial-gradient(80% 120% at 85% 10%, rgba(79, 124, 255, 0.24), transparent 55%),
+      var(--navy-900);
+  }
+
+  .app-hero__inner {
+    display: grid;
+    gap: clamp(2rem, 6vw, 3.5rem);
+    align-items: center;
+  }
+
+  .app-hero__inner > * {
+    min-width: 0;
+  }
+
+  .app-hero__title span {
+    display: block;
+  }
+
+  .app-hero__sub {
+    color: var(--color-text-muted);
+    font-size: 1.04rem;
+    max-width: 32rem;
+    margin: 0 0 1.75rem;
+  }
+
+  .app-hero__visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .app-hero__icon {
+    width: 4.5rem;
+  }
+
+  @media (min-width: 64rem) {
+    .app-hero__inner {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+    .app-hero__visual {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+    .app-hero__icon {
+      width: 5.5rem;
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  .cap__title {
+    font-size: 1.08rem;
+    margin: 0 0 0.5rem;
+  }
+
+  .cap__body {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.93rem;
+  }
+
+  .closing {
+    background:
+      radial-gradient(80% 140% at 50% 0%, rgba(124, 92, 255, 0.22), transparent 60%),
+      var(--navy-800);
+    padding-block: clamp(2.75rem, 8vw, 4.5rem);
+    text-align: center;
+  }
+
+  .closing__inner {
+    max-width: 34rem;
+    display: grid;
+    justify-items: center;
+    gap: 0.4rem;
+  }
+
+  .closing__icon {
+    width: 4rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .closing__title { margin: 0; }
+
+  .closing__body {
+    color: var(--color-text-muted);
+    margin: 0.25rem 0 1.5rem;
+  }
+</style>

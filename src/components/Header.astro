@@ -1,0 +1,214 @@
+---
+import { SITE_NAME, NAV_LINKS } from '../consts';
+import AppStoreButton from './AppStoreButton.astro';
+
+const currentPath = Astro.url.pathname;
+
+function isActive(href: string): boolean {
+  if (href === '/') return currentPath === '/';
+  return currentPath.startsWith(href);
+}
+---
+
+<header class="site-header brand">
+  <div class="container site-header__inner">
+    <a href="/" class="logo" aria-label={`${SITE_NAME} トップページ`}>
+      <span class="logo__mark" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" role="presentation">
+          <defs>
+            <linearGradient id="castmemo-logo-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#7c5cff" />
+              <stop offset="1" stop-color="#4f7cff" />
+            </linearGradient>
+          </defs>
+          <path d="M7 8.5 12 16M17 7.5 12 16M7 8.5 17 7.5" stroke="url(#castmemo-logo-grad)" stroke-width="1.6" stroke-linecap="round" />
+          <circle cx="7" cy="8" r="2.5" fill="#fff" />
+          <circle cx="17" cy="7" r="2.5" fill="#fff" />
+          <circle cx="12" cy="16.5" r="2.5" fill="#fff" />
+        </svg>
+      </span>
+      <span class="logo__text">{SITE_NAME}</span>
+    </a>
+
+    <!-- モバイルメニュー: JS 不要の <details> 開閉。デスクトップでは通常のナビに戻す。 -->
+    <details class="nav">
+      <summary class="nav__toggle" aria-label="メニューを開閉">
+        <span class="nav__toggle-bar" aria-hidden="true"></span>
+        <span class="nav__toggle-label">メニュー</span>
+      </summary>
+
+      <nav class="nav__panel" aria-label="グローバルナビゲーション">
+        <ul class="nav__list">
+          {NAV_LINKS.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class="nav__link"
+                aria-current={isActive(link.href) ? 'page' : undefined}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+        <div class="nav__cta">
+          <AppStoreButton label="App Storeで見る" location="header" variant="primary" />
+        </div>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: color-mix(in srgb, var(--navy-900) 90%, transparent);
+    backdrop-filter: saturate(1.4) blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 3.75rem;
+  }
+
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: 0.04em;
+    color: var(--text-on-dark);
+    text-decoration: none;
+  }
+
+  .logo__mark {
+    display: inline-flex;
+  }
+
+  /* ===== モバイル: <details> 開閉メニュー ===== */
+  .nav {
+    position: relative;
+  }
+
+  .nav__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-on-dark);
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+
+  .nav__toggle::-webkit-details-marker { display: none; }
+
+  .nav__toggle-bar {
+    width: 16px;
+    height: 2px;
+    background: currentColor;
+    box-shadow: 0 5px 0 currentColor, 0 -5px 0 currentColor;
+  }
+
+  .nav[open] .nav__toggle-bar {
+    box-shadow: none;
+    background: transparent;
+  }
+
+  .nav__panel {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.5rem);
+    width: min(78vw, 16rem);
+    background: var(--navy-700);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: var(--radius-md);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+    padding: 0.75rem;
+  }
+
+  .nav__list {
+    list-style: none;
+    margin: 0 0 0.5rem;
+    padding: 0;
+  }
+
+  .nav__link {
+    display: block;
+    padding: 0.6rem 0.65rem;
+    border-radius: var(--radius-sm);
+    color: var(--text-on-dark);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+
+  .nav__link:hover,
+  .nav__link[aria-current='page'] {
+    background: rgba(124, 92, 255, 0.22);
+    color: #fff;
+  }
+
+  .nav__cta {
+    padding: 0.35rem;
+  }
+
+  .nav__cta :global(.btn) {
+    width: 100%;
+  }
+
+  /* ===== デスクトップ: 横並びナビ ===== */
+  @media (min-width: 50rem) {
+    .nav {
+      display: flex;
+      align-items: center;
+    }
+
+    .nav__toggle {
+      display: none;
+    }
+
+    /* デスクトップでは <details> の開閉状態に関わらず常に表示する。
+       旧実装（UA の display:none）と新実装（::details-content の content-visibility）
+       の両方を上書きする。 */
+    .nav::details-content {
+      content-visibility: visible;
+    }
+
+    .nav__panel {
+      position: static;
+      display: flex !important;
+      align-items: center;
+      gap: 1.5rem;
+      width: auto;
+      background: none;
+      border: none;
+      box-shadow: none;
+      padding: 0;
+    }
+
+    .nav__list {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin: 0;
+    }
+
+    .nav__cta :global(.btn) {
+      width: auto;
+      white-space: nowrap;
+    }
+  }
+</style>

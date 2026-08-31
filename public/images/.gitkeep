@@ -1,0 +1,5 @@
+# このディレクトリの画像について（README のブランド素材セクション参照）:
+#   - app-icon-256.png / app-icon-512.png … `npm run generate:assets` の生成物。
+#       元画像は assets/source/app-icon.png（Web からは直接参照しない）。
+#   - app-screenshot-home.png … 任意。あれば実画像、無ければ AppScreenshot.astro が
+#       CSS 製デモ UI（架空作品）を表示します。
