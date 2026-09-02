@@ -1,0 +1,36 @@
+---
+/**
+ * Google Analytics 4（gtag.js）— Google が案内する標準の「Google タグ」。
+ *
+ * - BaseLayout.astro の <head> から 1 回だけ読み込む（＝全ページに 1 回だけ適用）。
+ * - `import.meta.env.PROD` が true の本番ビルドでのみ出力する。
+ *   `astro dev` では出力されないため、開発中のアクセスは GA4 に送信されない。
+ * - `gtag('config', ...)` は 1 回だけ呼ぶ → 通常のページビュー（page_view）は
+ *   ページ読み込みごとに 1 回だけ送信される。View Transitions / SPA ルーターは
+ *   未使用（各遷移はフルページ読み込み）なので二重送信は起きない。
+ * - GTM・カスタムイベントは追加しない。Google 公式スニペットをそのまま出力する。
+ *   （測定 ID は gtag.js の src と gtag('config', …) の 2 か所で参照する。これは
+ *   Google 公式スニペットの仕様で、タグ自体は 1 回だけ挿入される。）
+ */
+import { GA4_MEASUREMENT_ID } from '../consts';
+
+const enabled = import.meta.env.PROD && /^G-[A-Z0-9]+$/.test(GA4_MEASUREMENT_ID);
+
+const gtagInit = `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GA4_MEASUREMENT_ID}');`;
+---
+
+{
+  enabled && (
+    <>
+      <script
+        is:inline
+        async
+        src={`https://www.googletagmanager.com/gtag/js?id=${GA4_MEASUREMENT_ID}`}
+      />
+      <script is:inline set:html={gtagInit} />
+    </>
+  )
+}

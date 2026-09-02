@@ -18,7 +18,7 @@ Flutter で作られている **アプリ本体とは別リポジトリ／別プ
 | Markdown 拡張 | `@astrojs/mdx` | 本文に将来コンポーネント（相関図・CTA 等）を埋め込めるようにする |
 | サイトマップ | `@astrojs/sitemap` | ビルド時に `sitemap-index.xml` を自動生成 |
 | スタイル | **Astro 標準のスコープ付き CSS + 1 枚のグローバル CSS**（`src/styles/global.css`） | 下記参照 |
-| JS | 最小限（モバイルメニューは `<details>` で JS ゼロ、Analytics シムのみ ~350 bytes・外部 JS バンドル 0） | パフォーマンス優先 |
+| JS | 最小限（モバイルメニューは `<details>` で JS ゼロ、自前 JS は Analytics シム ~350 bytes・外部 JS バンドル 0。本番のみ GA4 gtag.js を読み込み） | パフォーマンス優先 |
 
 外部 UI ライブラリ・アイコンフォント・外部 Web フォントは使用していません。
 
@@ -184,8 +184,17 @@ SVG や正式アイコンの元画像を差し替えたら `npm run generate:ass
 - 共通コンポーネント `src/components/AppStoreButton.astro`。
   - 外部リンク（`target="_blank" rel="noopener external"`）。
   - `location`（押された位置）、`workSlug`（作品ページからの遷移）、`variant`（`primary`=紫→青グラデ / `ghost`）を props で受け取り、`data-analytics-*` 属性として出力。
-- クリック計測: `src/layouts/BaseLayout.astro` 内の Analytics シムが `[data-analytics-event]` のクリックを `window.dataLayer` に push（`event: 'app_store_click'`, `location`, `work`, `href`）。
-- **現時点で GA タグ・測定 ID は入れていません。** GA4 / GTM のスニペットを `BaseLayout.astro` に追加すれば計測が有効になります。
+- クリック計測: `src/layouts/BaseLayout.astro` 内の Analytics シムが `[data-analytics-event]` のクリックを `window.dataLayer` に push（`event: 'app_store_click'`, `location`, `work`, `href`）。これは GTM 用の受け皿で、現状 GTM は未使用。GA4（gtag.js）はこのプレーンオブジェクトを解釈しないため GA4 へは送信されません。
+
+---
+
+## Google Analytics 4
+
+- 測定 ID は `src/consts.ts` の `GA4_MEASUREMENT_ID`（`G-3C85EM27E5`）で一元管理。
+- Google タグ（gtag.js）は `src/components/GoogleAnalytics.astro` が出力し、`BaseLayout.astro` の `<head>` から**全ページに 1 回だけ**読み込む。
+- **本番ビルド時のみ出力**: `import.meta.env.PROD` が true のときだけタグを描画するため、`astro dev`（開発サーバー）では読み込まれず、開発中のアクセスは GA4 に送信されません。`astro build` した成果物には含まれます。
+- `gtag('config', …)` は 1 回だけ呼び、View Transitions / SPA ルーターは未使用のため、通常のページビュー（page_view）はページ読み込みごとに 1 回だけ送信されます。
+- GTM・カスタムイベントは未導入。
 
 ---
 
@@ -208,11 +217,11 @@ SVG や正式アイコンの元画像を差し替えたら `npm run generate:ass
 
 ## 今後、人間側で行う必要がある作業
 
-- プライバシーポリシー（`src/pages/privacy/index.astro`）の**正式内容の確認・作成**（法務確認。Analytics 導入時にも更新が必要）。
+- プライバシーポリシー（`src/pages/privacy/index.astro`）の**正式内容の確認・作成**（法務確認。GA4 導入に伴う「アクセス解析について」の記述は追記済みだが、事業者情報・制定日などは要確認）。
 - お問い合わせ窓口の決定と `src/pages/contact/index.astro` の更新（現在はプレースホルダー）。
 - ~~正式アプリアイコンの配置~~ … 完了（元画像 `assets/source/app-icon.png`）。差し替え時は元画像を置き換えて `npm run generate:assets` を再実行。
 - （任意）`public/images/app-screenshot-home.png` … 権利上問題のない実スクリーンショットを載せたい場合のみ配置。現状は HTML/CSS 製デモ UI（架空作品）で代替済み。
-- Google Analytics（GA4）アカウント作成 → 測定 ID を取得 → `BaseLayout.astro` にスニペット追加。
+- ~~Google Analytics（GA4）導入~~ … 完了（測定 ID `G-3C85EM27E5`、`src/components/GoogleAnalytics.astro`、本番ビルドのみ）。GA4 管理画面でデータ受信を確認すること。
 - Google Search Console 登録、sitemap 送信。
 - Cloudflare Pages プロジェクト作成・DNS 設定。
 - 実コンテンツ（作品ガイド記事）の作成。
@@ -254,7 +263,7 @@ castmemo-web/
    ├─ layouts/
    │  └─ BaseLayout.astro     # 共通レイアウト + <head> + Analytics シム
    ├─ components/
-   │  ├─ Seo.astro / JsonLd.astro
+   │  ├─ Seo.astro / JsonLd.astro / GoogleAnalytics.astro  # GA4（本番のみ）
    │  ├─ Header.astro         # ダーク・<details> モバイルメニュー
    │  ├─ Footer.astro         # ダーク
    │  ├─ AppStoreButton.astro # 紫→青グラデCTA・data-analytics-*

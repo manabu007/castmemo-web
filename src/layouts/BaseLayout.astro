@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import { SITE_LOCALE, BRAND_COLOR_NAVY } from '../consts';
 import Seo from '../components/Seo.astro';
+import GoogleAnalytics from '../components/GoogleAnalytics.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 
@@ -32,6 +33,9 @@ const { title, exactTitle, description, ogType, image, noindex } = Astro.props;
 
     <Seo title={title} exactTitle={exactTitle} description={description} ogType={ogType} image={image} noindex={noindex} />
 
+    {/* Google Analytics 4（本番ビルドのみ・全ページ 1 回） */}
+    <GoogleAnalytics />
+
     <!-- ページ固有の <head> 追加分（JSON-LD など） -->
     <slot name="head" />
   </head>
@@ -45,10 +49,11 @@ const { title, exactTitle, description, ogType, image, noindex } = Astro.props;
     <Footer />
 
     <!--
-      Analytics シム（プレースホルダー）。
-      現時点では実際の GA タグ・測定 ID は入れていない。
-      App Store CTA など data-analytics-event を持つ要素のクリックを
-      window.dataLayer に push するだけ。将来 GA4 / GTM を読み込めば計測が有効になる。
+      Analytics シム。
+      App Store CTA など data-analytics-event を持つ要素のクリック情報を
+      window.dataLayer に push するだけ（GTM 用の受け皿。現状 GTM は未使用）。
+      GA4（gtag.js）は <head> の <GoogleAnalytics /> が読み込み、通常のページビューを計測する。
+      このシムのプレーンオブジェクト push は gtag.js には解釈されず、GA4 へは送信されない。
     -->
     <script>
       type AnalyticsPayload = {

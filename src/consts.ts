@@ -45,6 +45,14 @@ export const BRAND_COLOR_NAVY = '#16172a';
 export const BRAND_COLOR_PURPLE = '#7c5cff';
 
 /**
+ * Google Analytics 4 の測定 ID。
+ * 実際の Google タグ（gtag.js）は src/components/GoogleAnalytics.astro が出力し、
+ * BaseLayout.astro の <head> から 1 回だけ読み込む。
+ * 本番ビルド（import.meta.env.PROD）でのみ出力され、開発サーバーでは読み込まれない。
+ */
+export const GA4_MEASUREMENT_ID = 'G-3C85EM27E5';
+
+/**
  * 将来 English 版を追加する場合の基準パス。
  * 現時点では日本語のみ。言語切替 UI は未実装。
  */
