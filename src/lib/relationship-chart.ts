@@ -5,8 +5,11 @@
  * <RelationshipChart nodes={...} relationships={...} /> に渡す。
  */
 
-/** 関係の種別。色・線種・凡例ラベルは RELATION_STYLES 参照。 */
-export type RelationType = 'family' | 'friend' | 'rival' | 'other';
+/**
+ * 関係の種別。色・線種・凡例ラベルは RELATION_STYLES 参照。
+ * - neutral … 敵味方や結末を示さない中立の関係。すべて同色（グレー）。
+ */
+export type RelationType = 'family' | 'friend' | 'rival' | 'other' | 'neutral';
 
 export interface ChartNode {
   /** 一意なID（relationships から参照する） */
@@ -63,6 +66,7 @@ export const RELATION_STYLES: Record<
   friend: { color: '#5aa0ff', text: '#9cc6ff', dash: '', width: 3.1, legend: '友人・仲間' },
   rival: { color: '#f2706e', text: '#ffa6a4', dash: '10 7', width: 3.3, legend: '敵対' },
   other: { color: '#aeb4c8', text: '#ced3e2', dash: '', width: 2.7, legend: '夫婦・仕事・その他' },
+  neutral: { color: '#aeb4c8', text: '#ced3e2', dash: '', width: 2.7, legend: '関係' },
 };
 
 /**

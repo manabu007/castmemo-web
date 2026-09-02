@@ -9,19 +9,32 @@
  * memo … 「覚え方」として強調表示（主要人物向け）
  * relation … 「関係」として強調表示（家族欄など）
  * どちらも任意。両方省略すると本文のみのコンパクト表示。
- * 画像は使用しない（頭文字を表示）。
+ *
+ * 円の中は名前の頭文字。
+ * 引用として公式キャラクター画像を添える場合のみ image を渡す。
+ * その場合、本文（slot 既定）を「主」、画像を独立した <figure>（「従」）として表示し、
+ * 出典・権利表記は名前付きスロット figcaption に置く（alt には詰め込まない）。
  */
 interface Props {
   name: string;
-  /** 「演：」に続く俳優名（任意） */
+  /** クレジット名（俳優・声優など、任意） */
   actor?: string;
+  /** クレジットの表示ラベル（任意・既定「演」）。アニメ記事などで「声」に切り替える */
+  creditLabel?: string;
   /** 「覚え方」テキスト（任意） */
   memo?: string;
   /** 「関係」テキスト（任意・改行は \n で複数行可） */
   relation?: string;
+  /** 引用画像のパス（任意）。渡すと本文の後ろに <figure> を表示する */
+  image?: string;
+  /** 引用画像の alt（画像内容の説明のみ。権利表記は入れない） */
+  imageAlt?: string;
+  /** 画像の実寸（CLS 防止用）。省略可 */
+  imageWidth?: number;
+  imageHeight?: number;
 }
 
-const { name, actor, memo, relation } = Astro.props;
+const { name, actor, creditLabel = '演', memo, relation, image, imageAlt, imageWidth, imageHeight } = Astro.props;
 const initial = [...name][0] ?? '';
 const relationLines = relation ? relation.split('\n').filter(Boolean) : [];
 ---
@@ -31,13 +44,28 @@ const relationLines = relation ? relation.split('\n').filter(Boolean) : [];
     <span class="pcard__initial" aria-hidden="true">{initial}</span>
     <div>
       <h3 class="pcard__name">{name}</h3>
-      {actor && <p class="pcard__actor">演：{actor}</p>}
+      {actor && <p class="pcard__actor">{creditLabel}：{actor}</p>}
     </div>
   </div>
 
   <div class="pcard__body">
     <slot />
   </div>
+
+  {image && (
+    <figure class="pcard__figure">
+      <img
+        class="pcard__img"
+        src={image}
+        alt={imageAlt}
+        width={imageWidth}
+        height={imageHeight}
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption class="pcard__figcaption"><slot name="figcaption" /></figcaption>
+    </figure>
+  )}
 
   {memo && (
     <p class="pcard__foot">
@@ -112,6 +140,46 @@ const relationLines = relation ? relation.split('\n').filter(Boolean) : [];
   }
   .pcard__body :global(p:last-child) {
     margin-bottom: 0;
+  }
+
+  /* 引用画像は「従」。本文より小さく、独立した figure として区別する */
+  .pcard__figure {
+    margin: 0.9rem 0 0;
+    padding-top: 0.8rem;
+    border-top: 1px dashed var(--color-border-strong);
+  }
+
+  /* 縦横比を崩さず、カード内で過度に大きくしない固定枠に contain で収める。
+     img の width/height 属性は CLS 防止のヒント。表示サイズは下の CSS で固定する。 */
+  .pcard__img {
+    display: block;
+    /* 画像だけを figure 内で水平中央に。figcaption は左揃えのまま。 */
+    margin-inline: auto;
+    width: 132px;
+    height: 210px;
+    object-fit: contain;
+    object-position: bottom center;
+    background: var(--color-surface-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+  }
+
+  @media (min-width: 30rem) {
+    .pcard__img {
+      width: 150px;
+      height: 230px;
+    }
+  }
+
+  .pcard__figcaption {
+    margin-top: 0.5rem;
+    font-size: 0.76rem;
+    line-height: 1.55;
+    color: var(--color-text-subtle);
+  }
+
+  .pcard__figcaption :global(a) {
+    color: var(--color-accent-strong);
   }
 
   .pcard__foot {

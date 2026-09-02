@@ -25,6 +25,8 @@ interface Props extends RelationshipChartData {
   /** viewBox 寸法（縦長 9:15 前後を推奨） */
   width?: number;
   height?: number;
+  /** 凡例を表示するか（種別が中立のみ等、凡例が不要な図では false） */
+  showLegend?: boolean;
 }
 
 const {
@@ -33,6 +35,7 @@ const {
   title = '人物相関図',
   width = 600,
   height = 1120,
+  showLegend = true,
 } = Astro.props;
 
 /** 人物円の半径（関係線よりかなり目立つサイズ） */
@@ -133,14 +136,16 @@ const relTypesUsed = [...new Set(relationships.map((r) => r.type))];
 <figure class="rchart" aria-labelledby={capId}>
   <figcaption id={capId} class="rchart__cap">{title}</figcaption>
 
-  <ul class="rchart__legend" aria-hidden="true">
-    {relTypesUsed.map((t) => (
-      <li>
-        <span class="rchart__swatch" data-type={t}></span>
-        {RELATION_STYLES[t].legend}
-      </li>
-    ))}
-  </ul>
+  {showLegend && (
+    <ul class="rchart__legend" aria-hidden="true">
+      {relTypesUsed.map((t) => (
+        <li>
+          <span class="rchart__swatch" data-type={t}></span>
+          {RELATION_STYLES[t].legend}
+        </li>
+      ))}
+    </ul>
+  )}
 
   <p class="rchart__swipehint" aria-hidden="true">横にスワイプして人物関係を確認できます</p>
 
@@ -353,7 +358,8 @@ const relTypesUsed = [...new Set(relationships.map((r) => r.type))];
     border-top-style: dashed;
     border-top-color: #d6453f;
   }
-  .rchart__swatch[data-type='other'] { border-top-color: #6b7180; }
+  .rchart__swatch[data-type='other'],
+  .rchart__swatch[data-type='neutral'] { border-top-color: #6b7180; }
 
   .rchart__scroll {
     overflow-x: auto;
@@ -476,5 +482,6 @@ const relTypesUsed = [...new Set(relationships.map((r) => r.type))];
   .rchart__list-tag[data-type='family'] { background: #e6f7ee; color: #1c7a45; border-color: #bce6cf; }
   .rchart__list-tag[data-type='friend'] { background: #e8f0fe; color: #2a5cc0; border-color: #c3d6f7; }
   .rchart__list-tag[data-type='rival'] { background: #fdecec; color: #b83a35; border-color: #f2c9c7; }
-  .rchart__list-tag[data-type='other'] { background: var(--color-surface-muted); color: var(--color-text-muted); }
+  .rchart__list-tag[data-type='other'],
+  .rchart__list-tag[data-type='neutral'] { background: var(--color-surface-muted); color: var(--color-text-muted); }
 </style>
