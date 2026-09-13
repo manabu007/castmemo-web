@@ -22,7 +22,13 @@ const year = new Date().getFullYear();
           <li><a href={link.href}>{link.label}</a></li>
         ))}
         <li>
-          <a href={APP_STORE_URL} target="_blank" rel="noopener external">
+          <a
+            href={APP_STORE_URL}
+            target="_blank"
+            rel="noopener external"
+            data-analytics-event="app_store_click"
+            data-analytics-location="footer"
+          >
             App Store<span class="visually-hidden">（外部サイト）</span>
           </a>
         </li>

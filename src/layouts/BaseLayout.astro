@@ -49,11 +49,18 @@ const { title, exactTitle, description, ogType, image, noindex } = Astro.props;
     <Footer />
 
     <!--
-      Analytics シム。
-      App Store CTA など data-analytics-event を持つ要素のクリック情報を
-      window.dataLayer に push するだけ（GTM 用の受け皿。現状 GTM は未使用）。
-      GA4（gtag.js）は <head> の <GoogleAnalytics /> が読み込み、通常のページビューを計測する。
-      このシムのプレーンオブジェクト push は gtag.js には解釈されず、GA4 へは送信されない。
+      Analytics シム（クリック計測）。
+      data-analytics-event を持つ要素のクリックを 1 つの document リスナーで拾う。
+      - 従来どおり window.dataLayer にプレーンオブジェクトを push（GTM 用の受け皿。
+        現状 GTM は未使用で、この push は gtag.js には解釈されず GA4 へは送信されない）。
+      - さらに data-analytics-event が app_store_click / guide_link_click のときは、
+        同じイベント名で GA4 へ 1 回だけ送信する。パラメータ名は
+        link_url / link_location / link_work / page_path で統一し、
+        link_work は data-analytics-work がある要素だけに付ける（無ければキー自体を送らない）。
+        個人情報（uid・メール・ユーザー入力内容など）は一切含めない。
+        window.gtag が無い場合（開発サーバー・広告ブロッカー等）は何もせず、
+        リンク本来の遷移は妨げない（preventDefault / 待機なし）。
+      GA4 の基本タグ・page_view・拡張計測の click は <GoogleAnalytics /> 側でそのまま。
     -->
     <script>
       type AnalyticsPayload = {
@@ -63,21 +70,40 @@ const { title, exactTitle, description, ogType, image, noindex } = Astro.props;
         href: string | null;
       };
 
+      // GA4 へ実際に送信するイベント名（この2つだけ。他の data-analytics-event 値は
+      // dataLayer への push のみで、GA4 へは送らない）。
+      const GA4_FORWARDED_EVENTS = new Set(['app_store_click', 'guide_link_click']);
+
       window.dataLayer = window.dataLayer || [];
 
       document.addEventListener('click', (e) => {
         const target = e.target as HTMLElement | null;
+        // リンク内の文字やアイコンを押しても対象リンクを取得できるよう closest を使う
         const el = target?.closest<HTMLElement>('[data-analytics-event]');
         if (!el) return;
 
-        const payload: AnalyticsPayload = {
-          event: el.dataset.analyticsEvent ?? 'unknown',
-          location: el.dataset.analyticsLocation ?? null,
-          work: el.dataset.analyticsWork ?? null,
-          href: el.getAttribute('href'),
-        };
+        const analyticsEvent = el.dataset.analyticsEvent ?? 'unknown';
+        const location = el.dataset.analyticsLocation ?? null;
+        const work = el.dataset.analyticsWork ?? null;
+        const href = el.getAttribute('href');
 
+        const payload: AnalyticsPayload = {
+          event: analyticsEvent,
+          location,
+          work,
+          href,
+        };
         window.dataLayer.push(payload);
+
+        // GA4: app_store_click / guide_link_click を、そのままのイベント名で 1 回だけ送信
+        if (GA4_FORWARDED_EVENTS.has(analyticsEvent) && typeof window.gtag === 'function') {
+          window.gtag('event', analyticsEvent, {
+            link_url: href,
+            link_location: location ?? 'unknown',
+            ...(work ? { link_work: work } : {}),
+            page_path: window.location.pathname,
+          });
+        }
       });
     </script>
   </body>

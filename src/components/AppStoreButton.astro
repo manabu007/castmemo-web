@@ -4,11 +4,11 @@
  *
  * - 遷移先は consts.ts の APP_STORE_URL（Apple 正式形式）で一元管理
  * - 外部リンクとして rel / 別タブを適切に付与
- * - どのページ・どの位置・どの作品から押されたかを data-* 属性で保持し、
- *   将来 Analytics（例: app_store_click イベント）を差し込めるようにする
+ * - どのページ・どの位置・どの作品から押されたかを data-* 属性で保持する。
+ *   `data-analytics-location` の値がそのまま GA4 の link_location になる。
  *
- * クリック計測の受け口は BaseLayout.astro の analytics シムを参照。
- * 現時点では実際の GA タグ・測定 ID は入れていない。
+ * クリック計測: BaseLayout.astro の analytics シムが data-analytics-event="app_store_click"
+ * を拾い、本番では GA4 へ app_store_click イベントを送信する。
  *
  * 見た目:
  * - variant="primary" … 紫→青グラデーション（global.css の .btn--primary）
