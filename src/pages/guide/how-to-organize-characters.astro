@@ -1,0 +1,341 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import JsonLd from '../../components/JsonLd.astro';
+import AppStoreButton from '../../components/AppStoreButton.astro';
+import { SITE_URL } from '../../consts';
+
+const title = '登場人物を忘れるときの整理方法｜人物メモ・相関図アプリ「CastMemo」の使い方';
+const description =
+  'ドラマ・映画・アニメ・小説の登場人物が覚えられないときに。CastMemoを使って人物メモ、相関図、視聴位置や考察メモを整理する方法を、実際のアプリ画面とともに紹介します。';
+
+const canonical = new URL('/guide/how-to-organize-characters/', SITE_URL).href;
+const publishedISO = '2026-09-13T00:00:00.000Z';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  inLanguage: 'ja',
+  datePublished: publishedISO,
+  dateModified: publishedISO,
+  mainEntityOfPage: canonical,
+};
+---
+
+<BaseLayout exactTitle={title} description={description} ogType="article">
+  <JsonLd slot="head" data={jsonLd} />
+
+  <article>
+    <header class="guide-hero brand">
+      <div class="container guide-hero__inner">
+        <nav class="breadcrumb" aria-label="パンくずリスト">
+          <a href="/">CastMemo公式サイト</a>
+          <span aria-hidden="true">/</span>
+          <a href="/guide/">使い方ガイド</a>
+        </nav>
+
+        <p class="tag">使い方ガイド</p>
+        <h1>登場人物を忘れる人へ｜CastMemoで人物・相関図・視聴メモを整理する方法</h1>
+        <p class="guide-hero__desc">{description}</p>
+      </div>
+    </header>
+
+    <div class="container guide-body-wrap">
+      <div class="article-body">
+        <p>
+          数日ぶりにドラマの続きを見たとき、「あれ、この人誰だっけ」となった経験はないでしょうか。人物名を検索してみても、作品によっては正体や生死、後の所属、結末など、まだ見ていない先の情報まで検索結果に出てきてしまうことがあります。
+        </p>
+        <p>
+          特に、登場人物の多い海外ドラマや群像劇、長編アニメ、人物関係が複雑なミステリー、数日かけて読む小説では、人物が増えるほど「誰が誰か」が分からなくなりやすいものです。
+        </p>
+        <p>
+          <strong>CastMemo</strong>は、作品ごとに登場人物と人物関係を、自分が知った範囲だけで整理しておけるアプリです。すべての人物を細かく覚える必要はありません。忘れそうな人物だけ、その時点で分かったことを残しておけば十分です。この記事では、実際のアプリ画面とともに、CastMemoでの人物整理の流れを紹介します。
+        </p>
+
+        <figure class="shot">
+          <picture>
+            <source srcset="/images/guides/castmemo/home.webp" type="image/webp" />
+            <img
+              src="/images/guides/castmemo/home.png"
+              width="1179"
+              height="2556"
+              alt="CastMemoのホーム画面。作品一覧、作品検索、視聴中モードなどが表示されている"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+          <figcaption>CastMemoでは、作品ごとに登場人物をまとめて管理できます。</figcaption>
+        </figure>
+
+        <h2>作品ごとに登場人物をまとめておく</h2>
+        <p>
+          CastMemoでは、映画・ドラマ・アニメ・小説などを作品単位で管理できます。ひとつの作品に登場する人物をまとめて登録しておけるので、「この人誰だっけ」となったときは、その作品の人物一覧を開くだけで済みます。
+        </p>
+
+        <figure class="shot">
+          <picture>
+            <source srcset="/images/guides/castmemo/character-list.webp" type="image/webp" />
+            <img
+              src="/images/guides/castmemo/character-list.png"
+              width="1179"
+              height="2556"
+              alt="CastMemoで一つの作品に登録した登場人物を一覧表示している画面"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+          <figcaption>一つの作品に登場する人物を一覧で確認できます。</figcaption>
+        </figure>
+
+        <h2>「この人は誰？」を自分の言葉で残せる</h2>
+        <p>
+          CastMemoに書くメモは、詳しいプロフィールである必要はありません。例えば、次のような短いメモでも十分役に立ちます。
+        </p>
+        <ul>
+          <li>「主人公の上司」</li>
+          <li>「大学時代の友人」</li>
+          <li>「第3話から登場した刑事」</li>
+        </ul>
+        <p>
+          CastMemoは、Wikipediaのように人物の完全なプロフィールをまとめるためのものではなく、<strong>自分が思い出すためのメモ</strong>として使えるアプリです。
+        </p>
+
+        <figure class="shot">
+          <picture>
+            <source srcset="/images/guides/castmemo/character-detail.webp" type="image/webp" />
+            <img
+              src="/images/guides/castmemo/character-detail.png"
+              width="1179"
+              height="2556"
+              alt="CastMemoで登場人物の特徴やメモを記録している人物詳細画面"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+          <figcaption>人物ごとに、自分が覚えておきたい情報だけをメモできます。</figcaption>
+        </figure>
+
+        <h2>名前だけでは分からない関係は、相関図で整理</h2>
+        <p>
+          登場人物が増えてくると、名前と役割を覚えているだけでは足りなくなります。「この2人はどういう関係？」「誰の家族？」「同僚だったっけ？」となりやすいのも、こうした場面です。
+        </p>
+        <p>
+          CastMemoでは、人物同士を線でつなぎ、関係のラベルを付けて相関図として残せます。登場人物全員をつなぐ必要はなく、自分が把握しておきたい人物だけで相関図を作れることがポイントです。
+        </p>
+
+        <figure class="shot shot--wide">
+          <picture>
+            <source srcset="/images/guides/castmemo/relationship-chart.webp" type="image/webp" />
+            <img
+              src="/images/guides/castmemo/relationship-chart.png"
+              width="1179"
+              height="2556"
+              alt="CastMemoで複数の登場人物を線でつないで関係を整理した人物相関図"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+          <figcaption>人物同士の関係をつないで、自分だけの人物相関図を作れます。</figcaption>
+        </figure>
+
+        <div class="mid-cta">
+          <p>関係が増えてきたら、まずアプリで実際の画面を見てみるのがおすすめです。</p>
+          <AppStoreButton location="guide_character_organize_mid" variant="ghost" />
+        </div>
+
+        <h2>視聴中に気になったことも、その場で残せる</h2>
+        <p>
+          CastMemoには、視聴しながら記録できる「視聴中モード」があります。シーズンと話数といった視聴位置を残しておけるほか、気になった場面は「メモ」「考察」「伏線」「次に見る前」といった種類ごとに書き分けられます。登場人物欄からその場で人物を撮影して追加することもでき、見ながら細かい人物カードを作り込む必要はありません。
+        </p>
+
+        <figure class="shot">
+          <picture>
+            <source srcset="/images/guides/castmemo/watching-mode.webp" type="image/webp" />
+            <img
+              src="/images/guides/castmemo/watching-mode.png"
+              width="1179"
+              height="2556"
+              alt="CastMemoの視聴中モードで、視聴しながら人物やメモを記録する画面"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+          <figcaption>視聴中でも、気になった人物やメモをすばやく残せます。</figcaption>
+        </figure>
+
+        <h2>登場人物を検索する前に、自分のメモを見る</h2>
+        <p>
+          登場人物の名前を検索すると、作品によっては、この先の正体や生死、所属の変化、結末など、まだ見ていない情報が検索結果に表示されてしまうことがあります。
+        </p>
+        <p>
+          CastMemoなら、その時点までに自分が知った内容を自分で残しておけるので、「この人誰だっけ」となったときは、まず自分のメモを見返すという使い方ができます。ネタバレを完全に防げるわけではありませんが、検索する前に確認できる場所が手元にあるのは安心材料になります。
+        </p>
+
+        <h2>対応作品では、CastMemo公式の人物ガイドも確認できる</h2>
+        <p>
+          一部の作品では、作品詳細画面に「CastMemoの記事を見る」というボタンが表示されます。ここから、CastMemo公式サイトが用意している、ネタバレを抑えた登場人物・相関図ガイドを開けます。
+        </p>
+        <p>実際の人物ガイドの例です。</p>
+        <ul>
+          <li><a href="/works/succession/">『メディア王 ～華麗なる一族～』の人物ガイドを見る</a></li>
+          <li><a href="/works/attack-on-titan/">『進撃の巨人』の人物ガイドを見る</a></li>
+          <li><a href="/works/sousou-no-frieren/">『葬送のフリーレン』の人物ガイドを見る</a></li>
+        </ul>
+        <p>
+          3記事とも、扱う範囲やネタバレ方針を明記したうえで、序盤で分かる登場人物と人物関係を整理しています。
+        </p>
+
+        <h2>CastMemoはこんな作品で使いやすい</h2>
+        <p>CastMemoは、次のような作品で特に使いやすいと感じてもらえるはずです。</p>
+        <ul>
+          <li>登場人物が多い海外ドラマや群像劇</li>
+          <li>長編アニメやシリーズ作品</li>
+          <li>人物関係が複雑なミステリー</li>
+          <li>数日・数週間かけて読む小説</li>
+          <li>伏線や考察を残しながら楽しみたい作品</li>
+        </ul>
+        <p>
+          もちろん、すべての作品で必須というわけではありません。人物が少ない作品や、一気に見終えられる作品では、メモを残さなくても十分楽しめます。CastMemoの「探す」画面では、カテゴリで作品を絞り込んだり、作品ごとの特徴や人物整理のおすすめポイントを確認できます。
+        </p>
+
+        <figure class="shot">
+          <picture>
+            <source srcset="/images/guides/castmemo/discover.webp" type="image/webp" />
+            <img
+              src="/images/guides/castmemo/discover.png"
+              width="1179"
+              height="2556"
+              alt="CastMemoの「探す」画面。カテゴリで絞り込み、作品ごとのおすすめポイントも確認できる"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+          <figcaption>「探す」画面では、作品ごとに人物整理のポイントも確認できます。</figcaption>
+        </figure>
+
+        <h2>登場人物メモは、これくらいで十分</h2>
+        <p>実際にどれくらいの分量で書けばよいか迷う場合は、次のようなイメージで十分です（架空の例です）。</p>
+        <ul>
+          <li>高橋直人：主人公／出版社勤務</li>
+          <li>山本美咲：直人の大学時代の友人</li>
+          <li>佐藤健司：直人の上司</li>
+        </ul>
+        <p>
+          これだけでも、後で見返したときに「誰が誰か」を思い出す手がかりになります。長い文章を書けなくても、CastMemoは十分に役立ちます。
+        </p>
+
+        <h2>「この人、誰だっけ？」を減らすために</h2>
+        <p>登場人物を全員覚える必要はありません。忘れそうな人物だけ、その時点で分かったことを残しておけば十分です。</p>
+        <p>CastMemoは、</p>
+        <ul>
+          <li>登場人物</li>
+          <li>人物関係</li>
+          <li>視聴中のメモ</li>
+        </ul>
+        <p>を、自分のペースで整理できるアプリです。気になった方は、ぜひ試してみてください。</p>
+      </div>
+
+      <div class="guide-footer">
+        <AppStoreButton location="guide_character_organize_bottom" label="App StoreでCastMemoを見る" variant="primary" />
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .guide-hero {
+    padding-block: clamp(1.75rem, 5vw, 2.75rem);
+    background:
+      radial-gradient(90% 130% at 92% 0%, rgba(79, 124, 255, 0.18), transparent 55%),
+      var(--navy-900);
+  }
+
+  .guide-hero__inner {
+    max-width: var(--content-width);
+  }
+
+  .breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    color: var(--color-text-subtle);
+    margin-bottom: 1rem;
+  }
+
+  .breadcrumb a {
+    text-decoration: none;
+  }
+
+  .guide-hero .tag {
+    margin-bottom: 0.9rem;
+  }
+
+  .guide-hero h1 {
+    margin-bottom: 0.6rem;
+  }
+
+  .guide-hero__desc {
+    color: var(--color-text-muted);
+    font-size: 1.02rem;
+    margin: 0;
+  }
+
+  .guide-body-wrap {
+    max-width: var(--content-width);
+    padding-top: clamp(1.75rem, 5vw, 2.75rem);
+    padding-bottom: 1rem;
+  }
+
+  /* スクリーンショット: スマホ縦長画像がデスクトップで巨大にならないよう
+     360〜420px程度を目安に中央配置。レスポンシブでは幅いっぱいまで縮小可。 */
+  .shot {
+    margin: 1.75rem auto;
+    max-width: min(100%, 380px);
+    text-align: center;
+  }
+
+  .shot--wide {
+    max-width: min(100%, 420px);
+  }
+
+  .shot picture,
+  .shot img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .shot img {
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-card);
+  }
+
+  .shot figcaption {
+    margin-top: 0.6rem;
+    font-size: 0.86rem;
+    color: var(--color-text-subtle);
+  }
+
+  .mid-cta {
+    margin: 2rem 0;
+    padding: 1.1rem 1.25rem;
+    background: var(--color-surface-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    text-align: center;
+  }
+
+  .mid-cta p {
+    margin: 0 0 0.8rem;
+    font-size: 0.92rem;
+    color: var(--color-text-muted);
+  }
+
+  .guide-footer {
+    margin-top: 2.5rem;
+    text-align: center;
+  }
+</style>

@@ -1,32 +1,83 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-const title = 'ガイド';
+const title = '使い方ガイド';
 const description =
-  'CastMemo の使い方や、登場人物の整理のコツをまとめるガイド記事の一覧です（準備中）。';
+  'CastMemoの使い方や、登場人物・人物関係を整理するコツをまとめたガイド記事の一覧です。';
+
+/**
+ * ガイド記事の一覧。今回は1件のみのシンプルな静的配列。
+ * 記事が増えたら配列に追加していく想定（大規模な一覧システム・collectionは今回作らない）。
+ */
+const guides = [
+  {
+    href: '/guide/how-to-organize-characters/',
+    title: '登場人物を忘れる人へ｜CastMemoで人物・相関図・視聴メモを整理する方法',
+    description:
+      'ドラマ・映画・アニメ・小説の登場人物が覚えられないときに。人物メモ、相関図、視聴中モードの使い方を、実際のアプリ画面とともに紹介します。',
+  },
+];
 ---
 
 <BaseLayout title={title} description={description}>
   <section class="section">
     <div class="container prose">
-      <p class="eyebrow">ガイド</p>
-      <h1>ガイド記事</h1>
+      <p class="eyebrow">使い方ガイド</p>
+      <h1>CastMemo使い方ガイド</h1>
       <p class="lede">
-        CastMemo の使い方や、登場人物・人物関係を整理するコツをまとめた記事を掲載予定です。
+        CastMemoの使い方や、登場人物・人物関係を整理するコツをまとめた記事です。
       </p>
-      <div class="card placeholder">
-        <p>ガイド記事は現在準備中です。公開までしばらくお待ちください。</p>
-        <p><a href="/works/">作品ガイド一覧を見る</a></p>
-      </div>
+
+      <ul class="guide-list">
+        {guides.map((guide) => (
+          <li class="card guide-list__item">
+            <a href={guide.href}>
+              <span class="guide-list__title">{guide.title}</span>
+              <span class="guide-list__desc">{guide.description}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <p class="guide-list__back"><a href="/works/">作品ガイド一覧を見る</a></p>
     </div>
   </section>
 </BaseLayout>
 
 <style>
-  .placeholder {
-    margin-top: 1.5rem;
+  .guide-list {
+    list-style: none;
+    margin: 1.75rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
   }
-  .placeholder p:last-child {
-    margin-bottom: 0;
+
+  .guide-list__item {
+    padding: 0;
+  }
+
+  .guide-list__item a {
+    display: block;
+    padding: 1.1rem 1.25rem;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .guide-list__title {
+    display: block;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 0.4rem;
+  }
+
+  .guide-list__desc {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+  }
+
+  .guide-list__back {
+    margin-top: 1.75rem;
   }
 </style>
