@@ -12,12 +12,10 @@ sample: false
 hideDefaultCta: true
 ---
 
-import RelationshipChart from '../../components/RelationshipChart.astro';
 import PersonCard from '../../components/PersonCard.astro';
 import ArticleNotice from '../../components/ArticleNotice.astro';
 import InlineAppCta from '../../components/InlineAppCta.astro';
 import AppStoreButton from '../../components/AppStoreButton.astro';
-import { moblandNodes, moblandRelationships } from '../../data/works/mobland';
 
 {/*
   人物関係の確認元は src/data/works/mobland.ts のコメント参照（Paramount+ 公式紹介記事など）。
@@ -37,10 +35,20 @@ import { moblandNodes, moblandRelationships } from '../../data/works/mobland';
 
 ## モブランドの人物相関図
 
-<RelationshipChart
-  title="モブランド 人物相関図（ハリガン家を中心に）"
-  nodes={moblandNodes}
-  relationships={moblandRelationships}
+<img
+  src="/images/works/mobland/relationship-chart.png"
+  alt="ドラマ「モブランド」の主要登場人物と人物関係を整理した相関図"
+  width={2400}
+  height={3000}
+/>
+
+この人物相関図はCastMemoで作成しました。
+
+<AppStoreButton
+  location="work_relationship_chart_image"
+  workSlug="mobland"
+  label="CastMemoで人物相関図を作る"
+  variant="primary"
 />
 
 ハリガン家を中心に人物関係を見ると、コンラッドとメイヴが一家の中心にいます。
