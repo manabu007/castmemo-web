@@ -3,6 +3,7 @@ import '../styles/global.css';
 import { SITE_LOCALE, BRAND_COLOR_NAVY } from '../consts';
 import Seo from '../components/Seo.astro';
 import GoogleAnalytics from '../components/GoogleAnalytics.astro';
+import MicrosoftClarity from '../components/MicrosoftClarity.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 
@@ -35,6 +36,9 @@ const { title, exactTitle, description, ogType, image, noindex } = Astro.props;
 
     {/* Google Analytics 4（本番ビルドのみ・全ページ 1 回） */}
     <GoogleAnalytics />
+
+    {/* Microsoft Clarity（本番ビルドのみ・全ページ 1 回。GA4・下記クリック計測シムには触れない） */}
+    <MicrosoftClarity />
 
     <!-- ページ固有の <head> 追加分（JSON-LD など） -->
     <slot name="head" />

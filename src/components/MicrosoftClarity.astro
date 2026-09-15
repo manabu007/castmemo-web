@@ -1,0 +1,27 @@
+---
+/**
+ * Microsoft Clarity — 行動分析（クリック・スクロール・セッション録画・ヒートマップ）用の
+ * 手動インストールタグ（Microsoft 公式の tracking code をそのまま使用）。
+ *
+ * - BaseLayout.astro の <head> から、<GoogleAnalytics /> の直後に 1 回だけ読み込む
+ *   （＝全ページに 1 回だけ適用）。
+ * - `import.meta.env.PROD` が true の本番ビルドでのみ出力する。
+ *   `astro dev` では出力されないため、開発中のアクセスは Clarity に送信されない。
+ * - Project ID は consts.ts の CLARITY_PROJECT_ID から参照する（直書きしない）。
+ * - GA4（gtag.js）・BaseLayout.astro のクリック計測シム（window.dataLayer /
+ *   data-analytics-event）には一切触れない。Clarity は独自のグローバル関数
+ *   window.clarity を定義するだけで、GA4 の gtag / dataLayer とは別系統で動作する。
+ */
+import { CLARITY_PROJECT_ID } from '../consts';
+
+const enabled = import.meta.env.PROD && /^[a-z0-9]+$/i.test(CLARITY_PROJECT_ID);
+
+// Microsoft 公式の手動インストール用 tracking code（そのまま使用。Project ID のみ差し込む）。
+const clarityInit = `(function(c,l,a,r,i,t,y){
+    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+})(window, document, "clarity", "script", "${CLARITY_PROJECT_ID}");`;
+---
+
+{enabled && <script is:inline set:html={clarityInit} />}
