@@ -21,28 +21,23 @@ import type { ChartNode, ChartRelationship } from '../../lib/relationship-chart'
  *     一切触れない。
  *   - すべての関係は type: 'neutral'（同色・中立）。色や配置に敵味方・善悪の意味はない。
  *   - directed（矢印）は使わない。
- *   - 乃木を中心に、公式情報で安全に言い切れる3つの関係だけを線で結ぶ。
- *     野崎との関係は、公式情報だけでは一言のラベルに単純化できないため、
- *     無理に線でつながない（PersonCard・組織整理の文章側で個別に説明する）。
+ *   - 乃木を中心に、公式情報で安全に言い切れる2つの関係だけを線で結ぶ。
+ *     野崎・ノコルとの関係は、ネタバレなしで一言のラベルに単純化できないため、
+ *     無理に線でつながず、ノードとしても含めない（PersonCard・組織整理の文章側で
+ *     名前・俳優の範囲だけ個別に説明する）。
+ *   - 【重要】乃木とノコルの関係（血縁・兄弟等）は第1シーズンの重要なネタバレのため、
+ *     ノード・relationships・note のいずれにも一切含めない。ノコルをこの相関図データに
+ *     追加する場合も、乃木との関係を示す線は絶対に作らないこと。
  */
 
-/** x,y はキャンバスに対する % 位置。乃木を中心に、3方向へ配置する。 */
+/** x,y はキャンバスに対する % 位置。乃木を中心に、2方向へ配置する。 */
 export const vivantNodes: ChartNode[] = [
-  { id: 'nogi', name: '乃木', initial: '乃', x: 45, y: 48 },
-  { id: 'nokoru', name: 'ノコル', initial: 'ノ', x: 18, y: 16 },
-  { id: 'yuzuki', name: '柚木', initial: '柚', x: 78, y: 20 },
-  { id: 'kurosu', name: '黒須', initial: '黒', x: 62, y: 85 },
+  { id: 'nogi', name: '乃木', initial: '乃', x: 35, y: 45 },
+  { id: 'yuzuki', name: '柚木', initial: '柚', x: 75, y: 20 },
+  { id: 'kurosu', name: '黒須', initial: '黒', x: 65, y: 80 },
 ];
 
 export const vivantRelationships: ChartRelationship[] = [
-  {
-    from: 'nogi',
-    to: 'nokoru',
-    label: '兄弟',
-    type: 'neutral',
-    labelPos: 0.5,
-    note: '乃木憂助 − ノコル（ノコルは乃木の弟）',
-  },
   {
     from: 'nogi',
     to: 'yuzuki',
