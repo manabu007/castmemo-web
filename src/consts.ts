@@ -29,6 +29,13 @@ export const APP_STORE_APP_NAME = 'castmemo';
 export const APP_STORE_URL = `https://apps.apple.com/app/${APP_STORE_APP_NAME}/id${APP_STORE_ID}`;
 
 /**
+ * Amazon アソシエイトのトラッキング ID（公開情報）。
+ * 紙の本リンクの tag= と照合するため、content.config.ts のスキーマ検証で使う。
+ * API 認証情報（Access Key 等）はここにも、リポジトリのどこにも置かない。
+ */
+export const AMAZON_ASSOCIATE_TAG = 'castmemo-22';
+
+/**
  * OGP 用のデフォルト画像（サイト内の静的パス）。
  *
  * `scripts/generate-og.mjs` が CastMemo ブランドのみで作った

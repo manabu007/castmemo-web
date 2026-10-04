@@ -1,0 +1,232 @@
+---
+/**
+ * 紙の本（漫画・小説）の商品エリア。作品記事の本文の前に表示する。
+ *
+ * - 表紙は Amazon の CDN（book.coverUrl）を直接参照する。ダウンロード・保存・
+ *   proxy・画像最適化は行わない（ブラウザが m.media-amazon.com に直接取りに行く）。
+ * - 表紙の読み込みに失敗した場合、または coverUrl が未取得の場合は、
+ *   CastMemo 独自の「表紙画像なし」を表示する。
+ * - amazonUrl（アソシエイトリンク）がある場合のみ、表紙・Amazon ボタン・
+ *   アソシエイト表記を出す。未取得（下書き）の場合は購入導線を出さない。
+ *   公開記事で amazonUrl を欠くことはスキーマ検証で防ぐ（content.config.ts）。
+ */
+import type { WorkEntry } from '../lib/works';
+
+interface Props {
+  book: NonNullable<WorkEntry['data']['book']>;
+}
+
+const { book } = Astro.props;
+const coverAlt = `${book.title} ${book.volume} 表紙`;
+const linkRel = 'sponsored noopener noreferrer';
+const hasAmazon = book.amazonUrl !== undefined;
+const hasCover = book.coverUrl !== undefined;
+// Amazon リンクがあるときだけ表紙をリンクにする。無いときは通常の要素にする
+const CoverTag = hasAmazon ? 'a' : 'div';
+---
+
+<section class="book-info" aria-labelledby="book-info-heading">
+  <h2 id="book-info-heading">作品基本情報</h2>
+
+  <div class="book-info__grid">
+    <figure class={hasCover ? 'book-cover' : 'book-cover is-fallback'}>
+      <CoverTag
+        class="book-cover__link"
+        href={hasAmazon ? book.amazonUrl : undefined}
+        target={hasAmazon ? '_blank' : undefined}
+        rel={hasAmazon ? linkRel : undefined}
+      >
+        {hasCover && (
+          <img
+            src={book.coverUrl}
+            alt={coverAlt}
+            width="600"
+            height="860"
+            loading="lazy"
+            decoding="async"
+            onerror="this.closest('.book-cover').classList.add('is-fallback')"
+          />
+        )}
+        <span class="book-cover__placeholder" aria-hidden="true">
+          <span class="book-cover__placeholder-note">表紙画像なし</span>
+          <strong>{book.title}</strong>
+          <span>{book.volume}</span>
+        </span>
+      </CoverTag>
+    </figure>
+
+    <div class="book-info__body">
+      <p class="book-info__kicker">紙の本（{book.volume}）</p>
+      <dl class="book-facts">
+        <div>
+          <dt>作品名</dt>
+          <dd>{book.title}</dd>
+        </div>
+        <div>
+          <dt>著者</dt>
+          <dd>{book.author}</dd>
+        </div>
+        <div>
+          <dt>出版社</dt>
+          <dd>{book.publisher}</dd>
+        </div>
+        <div>
+          <dt>第1巻の発売年</dt>
+          <dd>{book.firstVolumeYear}年</dd>
+        </div>
+        <div>
+          <dt>ISBN-13</dt>
+          <dd>{book.isbn13}</dd>
+        </div>
+      </dl>
+
+      {hasAmazon && (
+        <>
+          <a class="btn btn--primary book-info__cta" href={book.amazonUrl} target="_blank" rel={linkRel}>
+            Amazonで紙の本を見る
+            <span class="visually-hidden">（Amazonの商品ページへ。新しいタブで開きます）</span>
+          </a>
+
+          <p class="book-info__disclosure">
+            Amazonのアソシエイトとして、CastMemoは適格販売により収入を得ています。
+          </p>
+        </>
+      )}
+
+      {book.officialUrl && (
+        <p class="book-info__official">
+          <a href={book.officialUrl} target="_blank" rel="noopener external">出版社の作品ページ（{book.publisher}）</a>
+        </p>
+      )}
+    </div>
+  </div>
+</section>
+
+<style>
+  .book-info {
+    margin: 0 0 2.5rem;
+    padding: clamp(1.1rem, 4vw, 1.5rem);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+  }
+
+  .book-info h2 {
+    margin-top: 0;
+  }
+
+  .book-info__grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @media (min-width: 40rem) {
+    .book-info__grid {
+      grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+      align-items: start;
+    }
+  }
+
+  .book-cover {
+    margin: 0;
+  }
+
+  /* 紙の本の表紙比率（おおむね B6 判 128×182） */
+  .book-cover__link {
+    position: relative;
+    display: block;
+    width: min(200px, 60%);
+    aspect-ratio: 128 / 182;
+    margin-inline: auto;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .book-cover__link img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .book-cover__placeholder {
+    display: none;
+    position: absolute;
+    inset: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 1rem;
+    text-align: center;
+    background: var(--color-surface-muted);
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+  }
+
+  .book-cover__placeholder strong {
+    color: var(--color-text);
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+
+  .book-cover.is-fallback .book-cover__placeholder {
+    display: flex;
+  }
+
+  .book-cover.is-fallback img {
+    display: none;
+  }
+
+  .book-info__kicker {
+    margin: 0 0 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-accent-strong);
+  }
+
+  .book-facts {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0 0 1.1rem;
+  }
+
+  .book-facts div {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    gap: 0.5rem;
+    font-size: 0.92rem;
+  }
+
+  .book-facts dt {
+    color: var(--color-text-subtle);
+  }
+
+  .book-facts dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .book-info__cta {
+    display: inline-flex;
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .book-info__disclosure {
+    margin: 0.75rem 0 0;
+    font-size: 0.8rem;
+    color: var(--color-text-subtle);
+  }
+
+  .book-info__official {
+    margin: 0.4rem 0 0;
+    font-size: 0.85rem;
+  }
+</style>

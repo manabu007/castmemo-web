@@ -1,0 +1,100 @@
+---
+title: "ダンジョン飯の登場人物をネタバレなしで整理｜迷宮探索パーティーの顔ぶれ"
+seoTitle: "ダンジョン飯の登場人物をネタバレなしで整理｜CastMemo"
+slug: "dungeon-meshi"
+description: "ダンジョン飯のライオス一行など、序盤で覚えておきたい登場人物と仲間関係をネタバレを抑えて整理。「この人誰だっけ？」と感じたときの確認用に使える作品ガイドです。"
+category: "manga"
+releaseYear: 2015
+spoilerPolicy: "none"
+publishedAt: 2026-10-05
+draft: false
+featured: false
+sample: false
+hideDefaultCta: true
+book:
+  title: "ダンジョン飯"
+  volume: "1巻"
+  author: "九井諒子"
+  publisher: "KADOKAWA"
+  firstVolumeYear: 2015
+  isbn13: "9784047301535"
+  asin: "4047301531"
+  amazonUrl: "https://www.amazon.co.jp/%E3%83%80%E3%83%B3%E3%82%B8%E3%83%A7%E3%83%B3%E9%A3%AF-1%E5%B7%BB-%E3%83%93%E3%83%BC%E3%83%A0%E3%82%B3%E3%83%9F%E3%83%83%E3%82%AF%E3%82%B9-%E4%B9%9D%E4%BA%95-%E8%AB%92%E5%AD%90/dp/4047301531?_encoding=UTF8&dib_tag=se&dib=eyJ2IjoiMSJ9.MfVfWnCxbh_4CyVfmkD8JBPqw6xfEHS_A4Uf36pz4wKd_H1KKCtcS2XwV5NTm2mIEfVg1XemqDOVB4PLpQpjeiZy3SlXjGpUipOxKm-jfybXdRg0GSWErVNrimsh4fx1oNEsSmfOcMmYOgwkQAVQT8evUhc00lSp9BqhjS8JIx9CVZk7qlMN91ermS1ujY3VioTdvdYXmBX-QLUq1a5vT3zkxYjD2H4AzGpkQhv85sTGjcVqHv9lriSbKBhyOmWUKm65kfBPNt3xrVLqMQbgXrfWJGaAMhfAd-rhWbWt-Dk.2QJYBQ8P4vD796jfG4OaoU5buJ3DRSN5ucrILrVWCCI&qid=1791155211&sr=8-1-spons&linkCode=ll2&tag=castmemo-22&linkId=c27ce002c3db4cb3929ba0f36262abc9&ref_=as_li_ss_tl"
+  coverUrl: "https://m.media-amazon.com/images/I/81syNwyMPSL._SY342_.jpg"
+  officialUrl: "https://www.kadokawa.co.jp/product/301411000826/"
+---
+
+import RelationshipChart from '../../components/RelationshipChart.astro';
+import PersonCard from '../../components/PersonCard.astro';
+import ArticleNotice from '../../components/ArticleNotice.astro';
+import AppStoreButton from '../../components/AppStoreButton.astro';
+import { dungeonMeshiNodes, dungeonMeshiRelationships } from '../../data/works/dungeon-meshi';
+
+{/*
+  ネタバレ規則（本文・見出し・alt・相関図データのどこにも書かない）:
+    人物の過去・正体・能力の詳細／迷宮の深部や結末に関わる出来事／
+    後半の展開・関係の変化／死亡や捕食の場面の描写。
+    「実は」「後に」「やがて」など先を匂わせる書き方もしない。
+  人物情報の一次ソース: 公式作品サイト（delicious-in-dungeon.com）の登場人物欄と第1話の紹介。
+    公式で紹介文を確認できた人物（ライオス）以外は、「同じパーティーの仲間」の範囲にとどめる。
+  画像: 本文中に画像は置かない（表紙は BookInfo の Amazon CDN 直接参照のみ）。
+*/}
+
+『ダンジョン飯』は、迷宮（ダンジョン）で魔物を食べながら探索を進めるファンタジー漫画です。食材としての魔物と、冒険者たちの食卓が物語の中心にあります。
+
+登場人物は、探索パーティーの数人に絞られるため、序盤は比較的覚えやすい作品です。ただ、魔物の名前や迷宮の仕組みが多く出てくるので、「この人は誰のパーティーだったっけ」と迷うことがあります。この記事では、第1話の時点で示される顔ぶれだけを整理します。
+
+<ArticleNotice tone="spoiler" label="ネタバレ方針">
+この記事は、公式サイトと第1話で示される範囲の人物だけを扱います。人物の過去や能力の詳細、迷宮の深部の出来事、後半の展開には触れません。
+</ArticleNotice>
+
+## 主な登場人物
+
+<PersonCard name="ライオス" memo="主人公／パーティーのリーダー">
+優秀な剣士で、迷宮についての豊富な知識を持つパーティーのリーダー。妹を救うため、再びダンジョンへ挑みます。
+</PersonCard>
+
+<PersonCard name="マルシル" memo="パーティーの仲間">
+ライオスとともに迷宮を探索するパーティーの一人です。
+</PersonCard>
+
+<PersonCard name="チルチャック" memo="パーティーの仲間">
+ライオスとともに迷宮を探索するパーティーの一人です。
+</PersonCard>
+
+<PersonCard name="センシ" memo="パーティーの仲間">
+ライオスとともに迷宮を探索するパーティーの一人です。
+</PersonCard>
+
+## 最初に覚えたい人物関係
+
+<RelationshipChart
+  title="『ダンジョン飯』人物相関図（探索パーティー）"
+  nodes={dungeonMeshiNodes}
+  relationships={dungeonMeshiRelationships}
+  height={460}
+  showLegend={false}
+/>
+
+- **ライオス**と**マルシル**、**チルチャック**、**センシ**は、同じパーティーの仲間です
+
+線の色や配置に、敵味方や善悪の意味はありません。この記事では、パーティーの顔ぶれ以外の関係は扱っていません。
+
+## こんな人におすすめ
+
+- 魔物や迷宮の名前が多くて、人物を覚えきれなくなった人
+- 読み始める前に、パーティーの顔ぶれを押さえておきたい人
+- 読みながら、自分用の人物メモを残したい人
+
+## CastMemoで登場人物を整理する
+
+CastMemoなら、作品ごとに登場人物・特徴・メモ・関係を記録し、相関図で整理できます。自分が読んだところまでの人物だけを登録しておけるので、ネタバレを避けながら自分のペースで人物を整理できます。
+
+<AppStoreButton location="work_article_bottom" workSlug="dungeon-meshi" label="App StoreでCastMemoを見る" variant="primary" />
+
+## 情報の出典
+
+本記事の作品情報（作者・出版社・発売年・ISBN）は、KADOKAWAの作品ページの情報をもとにしています。人物の紹介は、公式作品サイトの登場人物欄と第1話の紹介に限定しています。
+
+- <a href="https://www.kadokawa.co.jp/product/301411000826/" target="_blank" rel="noopener external">KADOKAWA「ダンジョン飯 1巻」作品ページ</a>
+- <a href="https://delicious-in-dungeon.com/" target="_blank" rel="noopener external">TVアニメ「ダンジョン飯」公式サイト</a>

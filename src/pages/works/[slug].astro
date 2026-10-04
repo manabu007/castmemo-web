@@ -4,6 +4,7 @@ import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import JsonLd from '../../components/JsonLd.astro';
 import AppCtaBanner from '../../components/AppCtaBanner.astro';
+import BookInfo from '../../components/BookInfo.astro';
 import { getPublishedWorks, workSlug } from '../../lib/works';
 import { CATEGORY_LABELS, SPOILER_LABELS, SPOILER_DESCRIPTIONS } from '../../lib/labels';
 import { SITE_URL } from '../../consts';
@@ -35,10 +36,21 @@ const jsonLd = {
   datePublished: publishedISO,
   dateModified: updatedISO,
   mainEntityOfPage: canonical,
-  about: {
-    '@type': 'CreativeWork',
-    name: data.title,
-  },
+  // 紙の本の記事は Book、それ以外は CreativeWork として扱う。価格・評価は含めない。
+  about: data.book
+    ? {
+        '@type': 'Book',
+        name: data.book.title,
+        author: { '@type': 'Person', name: data.book.author },
+        publisher: { '@type': 'Organization', name: data.book.publisher },
+        isbn: data.book.isbn13,
+        bookFormat: 'https://schema.org/Paperback',
+        inLanguage: 'ja',
+      }
+    : {
+        '@type': 'CreativeWork',
+        name: data.title,
+      },
 };
 
 const dateFmt = new Intl.DateTimeFormat('ja-JP', { dateStyle: 'long' });
@@ -95,6 +107,8 @@ const dateFmt = new Intl.DateTimeFormat('ja-JP', { dateStyle: 'long' });
       <p class="spoiler-note">
         <strong>ネタバレ方針</strong>：{SPOILER_DESCRIPTIONS[data.spoilerPolicy]}
       </p>
+
+      {data.book && <BookInfo book={data.book} />}
 
       <div class="article-body">
         <Content />
